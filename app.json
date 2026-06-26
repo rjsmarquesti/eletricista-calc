@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Elétrica NBR",
+    "slug": "eletricista-calc",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "eletricanbr",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "br.com.divulgabr.eletricanbr"
+    },
+    "android": {
+      "package": "br.com.divulgabr.eletricanbr",
+      "versionCode": 1,
+      "allowBackup": true,
+      "adaptiveIcon": {
+        "backgroundColor": "#F59E0B",
+        "foregroundImage": "./assets/adaptive-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "blockedPermissions": [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-sqlite",
+      "expo-secure-store",
+      "expo-sharing",
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": ""
+      }
+    }
+  }
+}
