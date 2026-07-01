@@ -5,15 +5,29 @@ import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import { TABELA_CAPACIDADE_COBRE, DISJUNTORES_PADRAO, FATORES_TEMPERATURA } from '../../lib/nbr5410'
 import { TABELA_NBR14136 } from '../../lib/nbr14136'
 
-type Secao = 'bitola' | 'disjuntores' | 'temperatura' | 'tomadas' | 'alturas' | 'circuitos_min'
+type Secao =
+  | 'bitola'
+  | 'disjuntores'
+  | 'temperatura'
+  | 'tomadas'
+  | 'alturas'
+  | 'circuitos_min'
+  | 'aterramento_ref'
+  | 'spda_ref'
+  | 'motores_ref'
+  | 'emergencia_ref'
 
 const SECOES: { key: Secao; titulo: string; emoji: string }[] = [
-  { key: 'bitola',        titulo: 'Tabela de Bitolas',          emoji: '🔌' },
-  { key: 'disjuntores',   titulo: 'Disjuntores Padronizados',   emoji: '🛡️' },
-  { key: 'temperatura',   titulo: 'Fatores de Temperatura',     emoji: '🌡️' },
-  { key: 'tomadas',       titulo: 'Padrão NBR 14136',           emoji: '🔋' },
-  { key: 'alturas',       titulo: 'Alturas de Tomadas',         emoji: '📏' },
-  { key: 'circuitos_min', titulo: 'Circuitos Mínimos',          emoji: '📋' },
+  { key: 'bitola',          titulo: 'Tabela de Bitolas',          emoji: '🔌' },
+  { key: 'disjuntores',     titulo: 'Disjuntores Padronizados',   emoji: '🛡️' },
+  { key: 'temperatura',     titulo: 'Fatores de Temperatura',     emoji: '🌡️' },
+  { key: 'tomadas',         titulo: 'Padrão NBR 14136',           emoji: '🔋' },
+  { key: 'alturas',         titulo: 'Alturas de Tomadas',         emoji: '📏' },
+  { key: 'circuitos_min',   titulo: 'Circuitos Mínimos',          emoji: '📋' },
+  { key: 'aterramento_ref', titulo: 'Aterramento — Referência',   emoji: '🌍' },
+  { key: 'spda_ref',        titulo: 'SPDA — Referência',          emoji: '⛈️' },
+  { key: 'motores_ref',     titulo: 'Motores — Referência',       emoji: '⚙️' },
+  { key: 'emergencia_ref',  titulo: 'Iluminação de Emergência',   emoji: '🔦' },
 ]
 
 export default function NormasScreen() {
@@ -48,6 +62,10 @@ export default function NormasScreen() {
               {sec.key === 'tomadas' && <TabelaTomadas />}
               {sec.key === 'alturas' && <TabelaAlturas />}
               {sec.key === 'circuitos_min' && <TabelaCircuitosMin />}
+              {sec.key === 'aterramento_ref' && <AterramentoRef />}
+              {sec.key === 'spda_ref' && <SPDARef />}
+              {sec.key === 'motores_ref' && <MotoresRef />}
+              {sec.key === 'emergencia_ref' && <EmergenciaRef />}
             </View>
           )}
         </View>
@@ -55,7 +73,7 @@ export default function NormasScreen() {
 
       <View style={s.footerBox}>
         <Text style={s.footerText}>
-          Referência: ABNT NBR 5410:2004 e NBR 14136:2012.{'\n'}
+          Referência: NBR 5410:2004 • NBR 14136:2012 • NBR 5419:2015 • NBR 10898:2013 • NBR IEC 60947.{'\n'}
           ⚠️ App orientativo — não substitui ART/CREA do responsável técnico.
         </Text>
       </View>
@@ -196,6 +214,136 @@ function TabelaCircuitosMin() {
       ))}
       <Text style={s.legenda}>
         DR 30mA obrigatório: banheiro, cozinha, área de serviço, garagem, área externa e piscina (item 6.3.6).
+      </Text>
+    </View>
+  )
+}
+
+const RESISTIVIDADE = [
+  { solo: 'Pântano / Solo encharcado', rho: '30 Ω·m' },
+  { solo: 'Argila úmida',              rho: '100 Ω·m' },
+  { solo: 'Argila seca / Terra vegetal', rho: '200 Ω·m' },
+  { solo: 'Areia',                     rho: '500 Ω·m' },
+  { solo: 'Rocha solta / Cascalho',    rho: '1.500 Ω·m' },
+  { solo: 'Rocha dura',                rho: '3.000 Ω·m' },
+]
+
+function AterramentoRef() {
+  return (
+    <View>
+      <Text style={s.tabelaDesc}>Resistividade típica do solo (Ω·m) — NBR 5410 / literatura técnica</Text>
+      <View style={s.tableHead}>
+        <Text style={[s.th, { flex: 2 }]}>Tipo de solo</Text>
+        <Text style={[s.th, { flex: 1 }]}>ρ típico</Text>
+      </View>
+      {RESISTIVIDADE.map((r, i) => (
+        <View key={i} style={[s.tableRow, i % 2 === 0 && s.tableRowAlt]}>
+          <Text style={[s.td, { flex: 2, textAlign: 'left' }]}>{r.solo}</Text>
+          <Text style={[s.td, { flex: 1 }, s.tdBold]}>{r.rho}</Text>
+        </View>
+      ))}
+      <Text style={s.legenda}>
+        Resistência máx. admissível (NBR 5410):{'\n'}
+        Residencial: 10Ω • Predial: 5Ω • Hospitalar: 1Ω{'\n'}
+        Fórmula Dwight (haste vertical): R = ρ/2πL × (ln(4L/d) – 1)
+      </Text>
+    </View>
+  )
+}
+
+const NIVEIS_SPDA = [
+  { np: 'NP I',  esfera: '20 m', eficiencia: '98%', descidas: '10 m', corrente: '3 kA' },
+  { np: 'NP II', esfera: '30 m', eficiencia: '95%', descidas: '10 m', corrente: '5 kA' },
+  { np: 'NP III',esfera: '45 m', eficiencia: '90%', descidas: '15 m', corrente: '10 kA' },
+  { np: 'NP IV', esfera: '60 m', eficiencia: '80%', descidas: '20 m', corrente: '16 kA' },
+]
+
+function SPDARef() {
+  return (
+    <View>
+      <Text style={s.tabelaDesc}>NBR 5419:2015 — Parâmetros por nível de proteção</Text>
+      <View style={s.tableHead}>
+        <Text style={[s.th, { flex: 0.8 }]}>NP</Text>
+        <Text style={[s.th, { flex: 0.9 }]}>Esfera</Text>
+        <Text style={[s.th, { flex: 0.9 }]}>Efic.</Text>
+        <Text style={[s.th, { flex: 1 }]}>Descidas</Text>
+      </View>
+      {NIVEIS_SPDA.map((n, i) => (
+        <View key={i} style={[s.tableRow, i % 2 === 0 && s.tableRowAlt]}>
+          <Text style={[s.td, { flex: 0.8 }, s.tdBold]}>{n.np}</Text>
+          <Text style={[s.td, { flex: 0.9 }]}>{n.esfera}</Text>
+          <Text style={[s.td, { flex: 0.9 }]}>{n.eficiencia}</Text>
+          <Text style={[s.td, { flex: 1 }]}>{n.descidas}</Text>
+        </View>
+      ))}
+      <Text style={s.legenda}>
+        Ng Brasil: Sul=4 • Sudeste=6–10 • Centro-Oeste=14 • Norte=16–25 descargas/km²/ano{'\n'}
+        DPS Tipo 1: junto ao captor • Tipo 2: QD principal • Tipo 3: equipamentos sensíveis
+      </Text>
+    </View>
+  )
+}
+
+const FATORES_PARTIDA = [
+  { partida: 'Direta',              fator: '7,0× In', quando: 'Motores até 7,5 kW' },
+  { partida: 'Estrela-triângulo',   fator: '2,3× In', quando: 'Motores ≥ 7,5 kW' },
+  { partida: 'Soft-starter',        fator: '3,0× In', quando: 'Qualquer potência' },
+  { partida: 'Inversor (VFD)',      fator: '1,5× In', quando: 'Quando requer velocidade variável' },
+  { partida: 'Autotransformador',   fator: '4,0× In', quando: 'Motores grandes' },
+]
+
+function MotoresRef() {
+  return (
+    <View>
+      <Text style={s.tabelaDesc}>NBR IEC 60947 — Fatores de corrente de partida por tipo</Text>
+      {FATORES_PARTIDA.map((p, i) => (
+        <View key={i} style={[s.circMin, i % 2 === 0 && s.tableRowAlt]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={s.circMinItem}>{p.partida}</Text>
+            <Text style={[s.circMinItem, { color: COLORS.primary }]}>{p.fator}</Text>
+          </View>
+          <Text style={s.circMinRegra}>{p.quando}</Text>
+        </View>
+      ))}
+      <Text style={s.legenda}>
+        Disjuntor curva D: 10× In (motores){'\n'}
+        Contator AC-3: ≥ 1,25× In{'\n'}
+        Relé térmico: faixa 0,9× In a 1,1× In{'\n'}
+        In (3F) = P / (√3 × U × cosφ × η)
+      </Text>
+    </View>
+  )
+}
+
+const EMERGENCIA_TAB = [
+  { tipo: 'Residencial',          autonomia: '1h', m2: '500', obrig: 'Não' },
+  { tipo: 'Comercial < 750m²',    autonomia: '1h', m2: '500', obrig: 'Sim' },
+  { tipo: 'Comercial ≥ 750m²',    autonomia: '2h', m2: '500', obrig: 'Sim' },
+  { tipo: 'Industrial',           autonomia: '2h', m2: '300', obrig: 'Sim' },
+  { tipo: 'Hospitalar',           autonomia: '2h', m2: '200', obrig: 'Sim' },
+  { tipo: 'Hoteleiro / Escolar',  autonomia: '1h', m2: '500', obrig: 'Sim' },
+]
+
+function EmergenciaRef() {
+  return (
+    <View>
+      <Text style={s.tabelaDesc}>NBR 10898:2013 — Blocos autônomos por tipo de edificação</Text>
+      <View style={s.tableHead}>
+        <Text style={[s.th, { flex: 2 }]}>Tipo</Text>
+        <Text style={[s.th, { flex: 0.8 }]}>Autono.</Text>
+        <Text style={[s.th, { flex: 0.8 }]}>m²/bloco</Text>
+      </View>
+      {EMERGENCIA_TAB.map((e, i) => (
+        <View key={i} style={[s.tableRow, i % 2 === 0 && s.tableRowAlt]}>
+          <Text style={[s.td, { flex: 2, textAlign: 'left' }]}>{e.tipo}</Text>
+          <Text style={[s.td, { flex: 0.8 }, s.tdBold]}>{e.autonomia}</Text>
+          <Text style={[s.td, { flex: 0.8 }]}>{e.m2}</Text>
+        </View>
+      ))}
+      <Text style={s.legenda}>
+        Iluminância mín. rota de fuga: 1 lux{'\n'}
+        Iluminância mín. área de risco: 5–10 lux{'\n'}
+        Manutenção: teste de autonomia a cada 6 meses (NBR 10898 seção 6.4)
       </Text>
     </View>
   )

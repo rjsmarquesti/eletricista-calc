@@ -130,6 +130,177 @@ export async function exportarDisjuntorPDF(dados: DadosDisjuntorPDF): Promise<vo
   await imprimirECompartilhar(html, 'Disjuntor-NBR5410')
 }
 
+// ── PDF — Aterramento ────────────────────────────────────────────────────────
+
+interface DadosAterramentoPDF {
+  terreno: string
+  aplicacao: string
+  comprimentoHaste: string
+  diametroHaste: string
+  numHastes: string
+  secaoFase: string
+  resistividadeSolo: string
+  resistenciaUmaHaste: string
+  resistenciaResultante: string
+  limiteNorma: string
+  aprovado: boolean
+  hastesNecessarias: string
+  secaoCaboTerra: string
+  secaoEquipotencializacao: string
+  observacoes: string[]
+}
+
+export async function exportarAterramentoPDF(dados: DadosAterramentoPDF): Promise<void> {
+  const corStatus = dados.aprovado ? '#15803D' : '#DC2626'
+  const bgStatus = dados.aprovado ? '#F0FDF4' : '#FEF2F2'
+  const html = `
+    <!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      body{font-family:sans-serif;margin:0;padding:0;background:#fff}
+      @page{size:A4;margin:20mm}
+    </style></head><body>
+    ${header('Aterramento Elétrico — NBR 5410 / Fórmula de Dwight')}
+    <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
+    ${table([
+      rowHtml('Tipo de solo', dados.terreno),
+      rowHtml('Aplicação', dados.aplicacao),
+      rowHtml('Comprimento da haste', dados.comprimentoHaste + ' m'),
+      rowHtml('Diâmetro da haste', dados.diametroHaste + ' mm'),
+      rowHtml('Número de hastes', dados.numHastes),
+      rowHtml('Seção do fase', dados.secaoFase + ' mm²'),
+    ])}
+    <h3 style="color:#F59E0B;font-size:14px;margin-top:20px;margin-bottom:4px">Resultado</h3>
+    <div style="background:${bgStatus};border:2px solid ${corStatus};border-radius:8px;padding:14px;text-align:center;margin-bottom:12px">
+      <p style="margin:0;font-size:20px;font-weight:900;color:${corStatus}">${dados.aprovado ? '✓ APROVADO' : '✗ REPROVADO'}</p>
+      <p style="margin:4px 0 0;font-size:13px;color:#6B7280">${dados.resistenciaResultante} Ω (limite: ${dados.limiteNorma} Ω)</p>
+    </div>
+    ${table([
+      rowHtml('Resistividade do solo', dados.resistividadeSolo + ' Ω·m'),
+      rowHtml('Resistência (1 haste)', dados.resistenciaUmaHaste + ' Ω'),
+      rowHtml('Resistência resultante', dados.resistenciaResultante + ' Ω'),
+      rowHtml('Hastes necessárias (mínimo)', dados.hastesNecessarias),
+      rowHtml('Condutor de proteção (PE)', dados.secaoCaboTerra + ' mm²'),
+      rowHtml('Equipotencialização', dados.secaoEquipotencializacao + ' mm²'),
+    ])}
+    ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
+    ${footer()}
+    </body></html>
+  `
+  await imprimirECompartilhar(html, 'Aterramento-NBR5410')
+}
+
+// ── PDF — SPDA ───────────────────────────────────────────────────────────────
+
+interface DadosSPDAPDF {
+  dimensoes: string
+  fatorForma: string
+  Ng: string
+  tipoUso: string
+  Nd: string
+  Nc: string
+  relacao: string
+  spda: boolean
+  nivelProtecao: string
+  eficiencia: string
+  raioEsfera: string
+  numDescidas: string
+  observacoes: string[]
+}
+
+export async function exportarSPDAPDF(dados: DadosSPDAPDF): Promise<void> {
+  const html = `
+    <!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      body{font-family:sans-serif;margin:0;padding:0;background:#fff}
+      @page{size:A4;margin:20mm}
+    </style></head><body>
+    ${header('SPDA — Para-Raios (NBR 5419:2015)')}
+    <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
+    ${table([
+      rowHtml('Dimensões', dados.dimensoes),
+      rowHtml('Posição', dados.fatorForma),
+      rowHtml('Densidade de descargas (Ng)', dados.Ng + ' descargas/km²/ano'),
+      rowHtml('Tipo de uso', dados.tipoUso),
+    ])}
+    <h3 style="color:#F59E0B;font-size:14px;margin-top:20px;margin-bottom:4px">Resultado</h3>
+    <div style="background:${dados.spda ? '#FEF2F2' : '#F0FDF4'};border:2px solid ${dados.spda ? '#DC2626' : '#16A34A'};border-radius:8px;padding:14px;text-align:center;margin-bottom:12px">
+      <p style="margin:0;font-size:18px;font-weight:900;color:${dados.spda ? '#DC2626' : '#15803D'}">${dados.spda ? '⚡ SPDA NECESSÁRIO' : '✓ SPDA NÃO OBRIGATÓRIO'}</p>
+      <p style="margin:4px 0 0;font-size:13px;color:#6B7280">Nd/Nc = ${dados.relacao}</p>
+    </div>
+    ${dados.spda ? `
+    <div style="background:#FEF3C7;border-radius:8px;padding:12px;text-align:center;margin-bottom:12px">
+      <p style="margin:0;font-size:13px;color:#92400E">Nível de Proteção</p>
+      <p style="margin:4px 0 0;font-size:36px;font-weight:900;color:#92400E">NP ${dados.nivelProtecao}</p>
+      <p style="margin:4px 0 0;font-size:12px;color:#92400E">Eficiência mínima: ${dados.eficiencia}%</p>
+    </div>` : ''}
+    ${table([
+      rowHtml('Nd (freq. esperada)', dados.Nd + ' /ano'),
+      rowHtml('Nc (freq. aceitável)', dados.Nc + ' /ano'),
+      rowHtml('Raio da esfera rolante', dados.raioEsfera + ' m'),
+      rowHtml('Nº mínimo de descidas', dados.numDescidas),
+    ])}
+    ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
+    ${footer()}
+    </body></html>
+  `
+  await imprimirECompartilhar(html, 'SPDA-NBR5419')
+}
+
+// ── PDF — Motor ──────────────────────────────────────────────────────────────
+
+interface DadosMotorPDF {
+  potencia: string
+  tensao: string
+  fases: string
+  tipoPartida: string
+  correnteNominal: string
+  correntePartida: string
+  fatorPartida: string
+  disjuntorMotor: string
+  contator: string
+  releMin: string
+  releMax: string
+  secaoCabo: string
+  observacoes: string[]
+}
+
+export async function exportarMotorPDF(dados: DadosMotorPDF): Promise<void> {
+  const html = `
+    <!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      body{font-family:sans-serif;margin:0;padding:0;background:#fff}
+      @page{size:A4;margin:20mm}
+    </style></head><body>
+    ${header('Dimensionamento de Motor — NBR IEC 60947')}
+    <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados do motor</h3>
+    ${table([
+      rowHtml('Potência', dados.potencia + ' kW'),
+      rowHtml('Tensão', dados.tensao + ' V'),
+      rowHtml('Alimentação', dados.fases),
+      rowHtml('Tipo de partida', dados.tipoPartida),
+    ])}
+    <h3 style="color:#F59E0B;font-size:14px;margin-top:20px;margin-bottom:4px">Correntes</h3>
+    <div style="display:flex;gap:12px;margin-bottom:12px">
+      <div style="flex:1;background:#FEF3C7;border-radius:8px;padding:12px;text-align:center">
+        <p style="margin:0;font-size:12px;color:#92400E">Corrente Nominal (In)</p>
+        <p style="margin:4px 0 0;font-size:28px;font-weight:900;color:#92400E">${dados.correnteNominal} A</p>
+      </div>
+      <div style="flex:1;background:#FFF7ED;border-radius:8px;padding:12px;text-align:center">
+        <p style="margin:0;font-size:12px;color:#C2410C">Corrente de Partida (${dados.fatorPartida}×In)</p>
+        <p style="margin:4px 0 0;font-size:28px;font-weight:900;color:#C2410C">${dados.correntePartida} A</p>
+      </div>
+    </div>
+    <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Componentes selecionados</h3>
+    ${table([
+      rowHtml('Disjuntor motor (curva D)', dados.disjuntorMotor + ' A'),
+      rowHtml('Contator (AC-3)', dados.contator + ' A'),
+      rowHtml('Relé térmico (faixa)', dados.releMin + ' – ' + dados.releMax + ' A'),
+      rowHtml('Seção do cabo de alimentação', dados.secaoCabo + ' mm²'),
+    ])}
+    ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
+    ${footer()}
+    </body></html>
+  `
+  await imprimirECompartilhar(html, 'Motor-IEC60947')
+}
+
 // ── Utilitário ────────────────────────────────────────────────────────────────
 
 async function imprimirECompartilhar(html: string, nomeBase: string): Promise<void> {

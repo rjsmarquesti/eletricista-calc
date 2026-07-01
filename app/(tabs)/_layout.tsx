@@ -52,11 +52,15 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
       }}
     >
-      <Tabs.Screen name="bitola" options={{ title: 'Bitola', tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'flash' : 'flash-outline'} focused={focused} /> }} />
-      <Tabs.Screen name="disjuntor" options={{ title: 'Disjuntor', tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'shield' : 'shield-outline'} focused={focused} /> }} />
-      <Tabs.Screen name="tomadas" options={{ title: 'Tomadas', tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'hardware-chip' : 'hardware-chip-outline'} focused={focused} /> }} />
-      <Tabs.Screen name="circuitos" options={{ title: 'Circuitos', tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'git-network' : 'git-network-outline'} focused={focused} /> }} />
-      <Tabs.Screen name="normas" options={{ title: 'Normas', tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'book' : 'book-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="bitola"       options={{ title: 'Bitola',      tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'flash' : 'flash-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="disjuntor"   options={{ title: 'Disjuntor',   tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'shield' : 'shield-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="tomadas"     options={{ title: 'Tomadas',     tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'hardware-chip' : 'hardware-chip-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="circuitos"   options={{ title: 'Circuitos',   tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'git-network' : 'git-network-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="aterramento" options={{ title: 'Aterram.',    tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'earth' : 'earth-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="spda"        options={{ title: 'SPDA',        tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'thunderstorm' : 'thunderstorm-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="motores"     options={{ title: 'Motores',     tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="emergencia"  options={{ title: 'Emergência',  tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'warning' : 'warning-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="normas"      options={{ title: 'Normas',      tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'book' : 'book-outline'} focused={focused} /> }} />
     </Tabs>
   )
 }
