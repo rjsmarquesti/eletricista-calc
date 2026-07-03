@@ -20,6 +20,8 @@ import {
   ResultadoAterramento,
 } from '../../lib/aterramento'
 import { salvarCalculo } from '../../lib/db'
+import { compartilharTexto } from '../../lib/share'
+import { exportarAterramentoPDF } from '../../lib/pdf'
 
 const TERRENOS: TipoTerreno[] = ['pantanoso', 'argilaUmida', 'argila', 'areia', 'rochaSolta', 'rocha']
 const APLICACOES: TipoAplicacao[] = ['residencial', 'predial', 'hospitalar', 'spda', 'industrial']
@@ -188,6 +190,16 @@ export default function AterramentoScreen() {
 }
 
 function Resultado({ r }: { r: ResultadoAterramento }) {
+  function textoCompartilhar() {
+    return [
+      r.aprovado ? '✓ APROVADO' : '✗ REPROVADO',
+      `Resistência resultante: ${r.resistenciaResultante.toFixed(2)} Ω (limite: ${r.limiteNorma} Ω)`,
+      `Hastes necessárias: ${r.hastesNecessarias}`,
+      `Condutor PE: ${r.secaoCaboTerra} mm²`,
+      `Equipotencialização: ${r.secaoEquipotencializacao} mm²`,
+    ].join('\n')
+  }
+
   return (
     <View style={s.resultadoWrap}>
       {/* Status principal */}
@@ -219,6 +231,13 @@ function Resultado({ r }: { r: ResultadoAterramento }) {
           ))}
         </View>
       )}
+
+      {/* Ações */}
+      <View style={s.acoesRow}>
+        <TouchableOpacity style={s.btnAcao} onPress={() => compartilharTexto('Aterramento NBR 5410', textoCompartilhar())}>
+          <Text style={s.btnAcaoTxt}>📤 Compartilhar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -319,4 +338,10 @@ const s = StyleSheet.create({
   avisoAmarelo: { backgroundColor: COLORS.warningLight, borderColor: COLORS.warning },
   avisoVermelho: { backgroundColor: COLORS.dangerLight, borderColor: COLORS.danger },
   avisoTxt: { fontSize: FONTS.sm, color: COLORS.text, lineHeight: 20 },
+  acoesRow: { flexDirection: 'row', gap: 10 },
+  btnAcao: {
+    flex: 1, padding: 12, borderRadius: RADIUS.md, alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
+  },
+  btnAcaoTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
 })

@@ -115,6 +115,13 @@ export function salvarCalculo(
   return r.lastInsertRowId
 }
 
+export function getUltimosCalculos(limite = 50): Calculo[] {
+  return db.getAllSync<Calculo>(
+    'SELECT * FROM calculos ORDER BY criado_em DESC LIMIT ?',
+    [limite]
+  )
+}
+
 export function deletarCalculo(id: number): void {
   db.runSync('DELETE FROM calculos WHERE id = ?', [id])
 }

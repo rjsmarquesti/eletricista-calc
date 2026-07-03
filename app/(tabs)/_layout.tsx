@@ -60,6 +60,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="spda"        options={{ title: 'SPDA',        tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'thunderstorm' : 'thunderstorm-outline'} focused={focused} /> }} />
       <Tabs.Screen name="motores"     options={{ title: 'Motores',     tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} /> }} />
       <Tabs.Screen name="emergencia"  options={{ title: 'Emergência',  tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'warning' : 'warning-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="historico"   options={{ title: 'Histórico',   tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'time' : 'time-outline'} focused={focused} /> }} />
       <Tabs.Screen name="normas"      options={{ title: 'Normas',      tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'book' : 'book-outline'} focused={focused} /> }} />
     </Tabs>
   )

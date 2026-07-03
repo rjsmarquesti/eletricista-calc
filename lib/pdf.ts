@@ -1,23 +1,53 @@
 import * as Print from 'expo-print'
 import * as Sharing from 'expo-sharing'
 
-function header(titulo: string): string {
+let _responsavel = ''
+let _obra = ''
+
+export function configurarPDF(responsavel: string, obra: string): void {
+  _responsavel = responsavel
+  _obra = obra
+}
+
+export function getResponsavel(): string { return _responsavel }
+export function getObra(): string { return _obra }
+
+function gerarRef(): string {
+  const d = new Date()
+  return `ENBR-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`
+}
+
+function header(titulo: string, norma: string): string {
+  const agora = new Date()
+  const dataHora = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+  const ref = gerarRef()
   return `
-    <div style="font-family:sans-serif;max-width:700px;margin:0 auto;padding:20px">
-    <div style="border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:20px">
-      <h1 style="margin:0;font-size:22px;color:#111827">⚡ Elétrica NBR</h1>
-      <p style="margin:4px 0 0;font-size:13px;color:#6B7280">${titulo}</p>
-      <p style="margin:4px 0 0;font-size:11px;color:#9CA3AF">Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+    <div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #F59E0B;padding-bottom:14px;margin-bottom:20px">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:26px">⚡</span>
+          <span style="font-size:22px;font-weight:900;color:#111827">Elétrica NBR</span>
+        </div>
+        <p style="margin:2px 0 0;font-size:13px;font-weight:700;color:#374151">${titulo}</p>
+        <p style="margin:2px 0 0;font-size:11px;color:#9CA3AF">Ref. normativa: ${norma}</p>
+      </div>
+      <div style="text-align:right">
+        <p style="margin:0;font-size:10px;color:#9CA3AF">Ref. doc: <b style="color:#6B7280">${ref}</b></p>
+        <p style="margin:2px 0 0;font-size:10px;color:#9CA3AF">${dataHora}</p>
+        ${_responsavel ? `<p style="margin:4px 0 0;font-size:11px;font-weight:700;color:#374151">Resp.: ${_responsavel}</p>` : ''}
+        ${_obra ? `<p style="margin:2px 0 0;font-size:11px;color:#6B7280">Obra: ${_obra}</p>` : ''}
+      </div>
     </div>
   `
 }
 
-function footer(): string {
+function footer(normas: string): string {
   return `
     <div style="margin-top:32px;padding-top:12px;border-top:1px solid #E5E7EB">
-      <p style="font-size:10px;color:#9CA3AF;text-align:center">
-        ⚠️ Resultado orientativo — não substitui a responsabilidade técnica de engenheiro ou técnico eletricista habilitado (ART/CREA).<br>
-        NBR 5410:2004 • NBR 14136:2012
+      <p style="font-size:9px;color:#9CA3AF;text-align:center;line-height:16px">
+        ⚠️ Documento orientativo gerado pelo app Elétrica NBR — não substitui a responsabilidade técnica de engenheiro ou técnico eletricista habilitado (ART/CREA/CFT).<br>
+        ${normas}
       </p>
     </div>
     </div>
@@ -54,7 +84,7 @@ export async function exportarBitolaPDF(dados: DadosBitolaPDF): Promise<void> {
       body{font-family:sans-serif;margin:0;padding:0;background:#fff}
       @page{size:A4;margin:20mm}
     </style></head><body>
-    ${header('Cálculo de Bitola — NBR 5410')}
+    ${header('Cálculo de Bitola — NBR 5410', 'NBR 5410:2004 item 6.2')}
     <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
     ${table([
       rowHtml('Potência / Corrente', dados.potenciaOuCorrente),
@@ -75,7 +105,7 @@ export async function exportarBitolaPDF(dados: DadosBitolaPDF): Promise<void> {
     ])}
     ${dados.quedaAlerta ? `<div style="background:#FFFBEB;border:1px solid #F59E0B;border-radius:6px;padding:10px;margin:8px 0"><p style="margin:0;font-size:12px;color:#92400E">⚠️ Queda de tensão acima de 4% (limite NBR 5410 item 6.2.7). Considere aumentar a seção do cabo ou reduzir o comprimento.</p></div>` : ''}
     ${dados.aviso ? `<div style="background:#FEF2F2;border:1px solid #DC2626;border-radius:6px;padding:10px;margin:8px 0"><p style="margin:0;font-size:12px;color:#DC2626">${dados.aviso}</p></div>` : ''}
-    ${footer()}
+    ${footer('NBR 5410:2004 • NBR 14136:2012')}
     </body></html>
   `
   await imprimirECompartilhar(html, 'Bitola-NBR5410')
@@ -101,7 +131,7 @@ export async function exportarDisjuntorPDF(dados: DadosDisjuntorPDF): Promise<vo
       body{font-family:sans-serif;margin:0;padding:0;background:#fff}
       @page{size:A4;margin:20mm}
     </style></head><body>
-    ${header('Cálculo de Disjuntor — NBR 5410')}
+    ${header('Cálculo de Disjuntor — NBR 5410', 'NBR 5410:2004 seção 5.3')}
     <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
     ${table([
       rowHtml('Potência', dados.potencia),
@@ -124,7 +154,7 @@ export async function exportarDisjuntorPDF(dados: DadosDisjuntorPDF): Promise<vo
       </p>
       ${dados.motivoDR ? `<p style="margin:4px 0 0;font-size:12px;color:#92400E">${dados.motivoDR}</p>` : ''}
     </div>
-    ${footer()}
+    ${footer('NBR 5410:2004 • NBR 14136:2012')}
     </body></html>
   `
   await imprimirECompartilhar(html, 'Disjuntor-NBR5410')
@@ -158,7 +188,7 @@ export async function exportarAterramentoPDF(dados: DadosAterramentoPDF): Promis
       body{font-family:sans-serif;margin:0;padding:0;background:#fff}
       @page{size:A4;margin:20mm}
     </style></head><body>
-    ${header('Aterramento Elétrico — NBR 5410 / Fórmula de Dwight')}
+    ${header('Aterramento Elétrico — NBR 5410', 'NBR 5410:2004 seção 5.4 • Fórmula de Dwight')}
     <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
     ${table([
       rowHtml('Tipo de solo', dados.terreno),
@@ -182,7 +212,7 @@ export async function exportarAterramentoPDF(dados: DadosAterramentoPDF): Promis
       rowHtml('Equipotencialização', dados.secaoEquipotencializacao + ' mm²'),
     ])}
     ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
-    ${footer()}
+    ${footer('NBR 5410:2004 seção 5.4 • NBR 5419:2015')}
     </body></html>
   `
   await imprimirECompartilhar(html, 'Aterramento-NBR5410')
@@ -212,7 +242,7 @@ export async function exportarSPDAPDF(dados: DadosSPDAPDF): Promise<void> {
       body{font-family:sans-serif;margin:0;padding:0;background:#fff}
       @page{size:A4;margin:20mm}
     </style></head><body>
-    ${header('SPDA — Para-Raios (NBR 5419:2015)')}
+    ${header('SPDA — Para-Raios', 'NBR 5419:2015 partes 1–4')}
     <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
     ${table([
       rowHtml('Dimensões', dados.dimensoes),
@@ -238,7 +268,7 @@ export async function exportarSPDAPDF(dados: DadosSPDAPDF): Promise<void> {
       rowHtml('Nº mínimo de descidas', dados.numDescidas),
     ])}
     ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
-    ${footer()}
+    ${footer('NBR 5419:2015 partes 1–4 • NBR IEC 62305')}
     </body></html>
   `
   await imprimirECompartilhar(html, 'SPDA-NBR5419')
@@ -268,7 +298,7 @@ export async function exportarMotorPDF(dados: DadosMotorPDF): Promise<void> {
       body{font-family:sans-serif;margin:0;padding:0;background:#fff}
       @page{size:A4;margin:20mm}
     </style></head><body>
-    ${header('Dimensionamento de Motor — NBR IEC 60947')}
+    ${header('Dimensionamento de Motor', 'NBR IEC 60947 • NBR IEC 60034')}
     <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados do motor</h3>
     ${table([
       rowHtml('Potência', dados.potencia + ' kW'),
@@ -295,7 +325,7 @@ export async function exportarMotorPDF(dados: DadosMotorPDF): Promise<void> {
       rowHtml('Seção do cabo de alimentação', dados.secaoCabo + ' mm²'),
     ])}
     ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
-    ${footer()}
+    ${footer('NBR IEC 60947 • NBR IEC 60034 • NBR 5410:2004')}
     </body></html>
   `
   await imprimirECompartilhar(html, 'Motor-IEC60947')
