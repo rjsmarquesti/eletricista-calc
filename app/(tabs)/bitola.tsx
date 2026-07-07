@@ -8,6 +8,7 @@ import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularBitola, MetodoInstalacao, MaterialConductor, ResultadoBitola,
 } from '../../lib/nbr5410'
+import { compartilharTexto } from '../../lib/share'
 
 type Tensao = 127 | 220
 
@@ -218,6 +219,18 @@ export default function BitolaScreen() {
               <Text style={[s.alertaText, { color: COLORS.danger }]}>{resultado.aviso}</Text>
             </View>
           )}
+
+          <TouchableOpacity
+            style={s.btnCompartilhar}
+            onPress={() => compartilharTexto('Bitola NBR 5410', [
+              `Bitola recomendada: ${resultado.bitolaRecomendada} mm²`,
+              `Corrente de projeto: ${resultado.correnteCalc.toFixed(2)} A`,
+              `Capacidade nominal (${metodo}): ${resultado.capacidadeNominal} A`,
+              `Queda de tensão: ${resultado.quedaTensao}%${resultado.quedaAlerta ? ' ⚠️' : ' ✓'}`,
+            ].join('\n'))}
+          >
+            <Text style={s.btnCompartilharTxt}>📤 Compartilhar</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -278,4 +291,9 @@ const s = StyleSheet.create({
   alertaBox: { marginTop: 12, backgroundColor: COLORS.warningLight, borderRadius: RADIUS.md, padding: 12, borderWidth: 1, borderColor: COLORS.warning },
   alertaText: { fontSize: FONTS.sm, color: COLORS.warning, lineHeight: 18 },
   disclaimer: { fontSize: FONTS.xs, color: COLORS.textLight, textAlign: 'center', marginTop: 8 },
+  btnCompartilhar: {
+    marginTop: 12, padding: 12, borderRadius: RADIUS.md, alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
+  },
+  btnCompartilharTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
 })

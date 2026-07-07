@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { compartilharTexto } from '../../lib/share'
 import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularEmergencia,
@@ -172,6 +173,20 @@ function Resultado({ r }: { r: ResultadoEmergencia }) {
           <Text key={i} style={s.avisoTxt}>• {o}</Text>
         ))}
       </View>
+
+      <View style={s.acoesRow}>
+        <TouchableOpacity
+          style={s.btnAcao}
+          onPress={() => compartilharTexto('Iluminação de Emergência NBR 10898', [
+            `${r.obrigatorio ? '⚠️ OBRIGATÓRIO' : 'ℹ️ RECOMENDADO'}`,
+            `Blocos autônomos mínimos: ${r.blocosMinimos} (≥ ${r.potenciaMinBlocoW}W)`,
+            `Autonomia mínima: ${r.autonomiaMinima} horas`,
+            `Iluminância mín. rota: ${r.fluxoMinRota} lux | área: ${r.fluxoMinArea} lux`,
+          ].join('\n'))}
+        >
+          <Text style={s.btnAcaoTxt}>📤 Compartilhar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -263,4 +278,10 @@ const s = StyleSheet.create({
   tableValueDestaque: { color: COLORS.primary, fontSize: FONTS.md },
   avisoAmarelo: { backgroundColor: COLORS.warningLight, borderColor: COLORS.warning },
   avisoTxt: { fontSize: FONTS.sm, color: COLORS.text, lineHeight: 20 },
+  acoesRow: { flexDirection: 'row', gap: 10 },
+  btnAcao: {
+    flex: 1, padding: 12, borderRadius: RADIUS.md, alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
+  },
+  btnAcaoTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
 })

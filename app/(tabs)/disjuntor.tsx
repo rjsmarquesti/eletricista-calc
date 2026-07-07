@@ -7,6 +7,7 @@ import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularDisjuntor, TipoCarga, ResultadoDisjuntor,
 } from '../../lib/nbr5410'
+import { compartilharTexto } from '../../lib/share'
 
 type Tensao = 127 | 220
 
@@ -161,6 +162,17 @@ export default function DisjuntorScreen() {
               <Text style={s.drDesc}>DR 30mA classe AC (ou A para cargas eletrônicas).</Text>
             )}
           </View>
+
+          <TouchableOpacity
+            style={s.btnCompartilhar}
+            onPress={() => compartilharTexto('Disjuntor NBR 5410', [
+              `Disjuntor recomendado: ${resultado.disjuntorIn} A`,
+              `Corrente de projeto: ${resultado.corrente} A`,
+              `DR: ${resultado.drObrigatorio ? 'OBRIGATÓRIO — ' + resultado.motivoDR : 'Não obrigatório'}`,
+            ].join('\n'))}
+          >
+            <Text style={s.btnCompartilharTxt}>📤 Compartilhar</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -224,4 +236,9 @@ const s = StyleSheet.create({
   drDesc: { fontSize: FONTS.sm, color: COLORS.textMuted, lineHeight: 18 },
   drDescObrig: { color: COLORS.warning },
   disclaimer: { fontSize: FONTS.xs, color: COLORS.textLight, textAlign: 'center', marginTop: 8 },
+  btnCompartilhar: {
+    marginTop: 12, padding: 12, borderRadius: RADIUS.md, alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
+  },
+  btnCompartilharTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
 })

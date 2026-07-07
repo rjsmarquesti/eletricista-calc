@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { compartilharTexto } from '../../lib/share'
 import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularSPDA,
@@ -262,6 +263,21 @@ function Resultado({ r }: { r: ResultadoSPDA }) {
           ))}
         </View>
       )}
+
+      <View style={s.acoesRow}>
+        <TouchableOpacity
+          style={s.btnAcao}
+          onPress={() => compartilharTexto('SPDA NBR 5419', [
+            r.spda ? `⚡ SPDA NECESSÁRIO — NP ${r.nivelProtecao}` : '✓ SPDA NÃO OBRIGATÓRIO',
+            `Nd/Nc = ${r.relacaoNdNc.toFixed(3)}`,
+            `Raio da esfera rolante: ${r.raioEsfera} m`,
+            `Nº mínimo de descidas: ${r.numeroMinDescidas}`,
+            `DPS: Tipo 1 ${r.dpsTipo1 ? '✓' : '—'} | Tipo 2 ${r.dpsTipo2 ? '✓' : '—'} | Tipo 3 ${r.dpsTipo3 ? '✓' : '—'}`,
+          ].join('\n'))}
+        >
+          <Text style={s.btnAcaoTxt}>📤 Compartilhar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -399,4 +415,10 @@ const s = StyleSheet.create({
   avisoAmarelo: { backgroundColor: COLORS.warningLight, borderColor: COLORS.warning },
   avisoVerde: { backgroundColor: COLORS.successLight, borderColor: COLORS.success },
   avisoTxt: { fontSize: FONTS.sm, color: COLORS.text, lineHeight: 20 },
+  acoesRow: { flexDirection: 'row', gap: 10 },
+  btnAcao: {
+    flex: 1, padding: 12, borderRadius: RADIUS.md, alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
+  },
+  btnAcaoTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
 })

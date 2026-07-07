@@ -3,6 +3,7 @@ import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { compartilharTexto } from '../../lib/share'
 import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularCircuitos, AmbienteResidencial, TipoAmbiente, NOME_AMBIENTE,
@@ -191,6 +192,16 @@ export default function CircuitosScreen() {
               <Text style={s.obsText}>{obs}</Text>
             </View>
           ))}
+
+          <TouchableOpacity
+            style={s.btnCompartilhar}
+            onPress={() => compartilharTexto('Circuitos NBR 5410', [
+              `Total: ${resultado.totalCircuitos} circuitos`,
+              ...resultado.circuitos.map(c => `• ${c.nome} (${c.tipo}): ${c.descricao}`),
+            ].join('\n'))}
+          >
+            <Text style={s.btnCompartilharTxt}>📤 Compartilhar</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -259,4 +270,9 @@ const s = StyleSheet.create({
   obsBullet: { fontSize: FONTS.sm, color: COLORS.primary, fontWeight: '700' },
   obsText: { flex: 1, fontSize: FONTS.sm, color: COLORS.textMuted, lineHeight: 18 },
   disclaimer: { fontSize: FONTS.xs, color: COLORS.textLight, textAlign: 'center', marginTop: 8 },
+  btnCompartilhar: {
+    marginTop: 12, padding: 12, borderRadius: RADIUS.md, alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
+  },
+  btnCompartilharTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
 })

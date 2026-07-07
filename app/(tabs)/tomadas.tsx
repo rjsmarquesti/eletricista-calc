@@ -7,6 +7,7 @@ import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularTomadas, TipoAmbienteTomada, NOME_AMBIENTE_TOMADA, ResultadoTomadas,
 } from '../../lib/nbr14136'
+import { compartilharTexto } from '../../lib/share'
 
 const AMBIENTES: TipoAmbienteTomada[] = [
   'sala', 'dormitorio', 'escritorio',
@@ -170,6 +171,18 @@ export default function TomadasScreen() {
               <Text style={s.obsText}>{obs}</Text>
             </View>
           ))}
+
+          <TouchableOpacity
+            style={s.btnCompartilhar}
+            onPress={() => compartilharTexto(`Tomadas — ${NOME_AMBIENTE_TOMADA[ambiente]}`, [
+              `Quantidade mínima: ${resultado.qtdMinima} tomadas`,
+              `Tipo: ${resultado.tipo === 'misto' ? '10A e 20A' : resultado.tipo}`,
+              `Altura recomendada: ${resultado.alturaRecomendada}`,
+              resultado.drObrigatorio ? 'DR 30mA obrigatório' : '',
+            ].filter(Boolean).join('\n'))}
+          >
+            <Text style={s.btnCompartilharTxt}>📤 Compartilhar</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -227,4 +240,9 @@ const s = StyleSheet.create({
   obsBullet: { fontSize: FONTS.sm, color: COLORS.primary, fontWeight: '700', marginTop: 1 },
   obsText: { flex: 1, fontSize: FONTS.sm, color: COLORS.textMuted, lineHeight: 18 },
   disclaimer: { fontSize: FONTS.xs, color: COLORS.textLight, textAlign: 'center', marginTop: 8 },
+  btnCompartilhar: {
+    marginTop: 12, padding: 12, borderRadius: RADIUS.md, alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
+  },
+  btnCompartilharTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
 })
