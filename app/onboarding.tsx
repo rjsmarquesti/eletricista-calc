@@ -53,7 +53,12 @@ export default function OnboardingScreen() {
   return (
     <View style={[s.container, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}>
       {/* Skip */}
-      <TouchableOpacity style={s.skip} onPress={concluir}>
+      <TouchableOpacity
+        style={s.skip}
+        onPress={concluir}
+        accessibilityRole="button"
+        accessibilityLabel="Pular introdução"
+      >
         <Text style={s.skipTxt}>Pular</Text>
       </TouchableOpacity>
 
@@ -71,14 +76,19 @@ export default function OnboardingScreen() {
       </View>
 
       {/* Indicadores */}
-      <View style={s.dots}>
+      <View style={s.dots} accessibilityRole="none" accessibilityLabel={`Passo ${passo + 1} de ${PASSOS.length}`}>
         {PASSOS.map((_, i) => (
           <View key={i} style={[s.dot, i === passo && s.dotAtivo]} />
         ))}
       </View>
 
       {/* Botão */}
-      <TouchableOpacity style={s.btn} onPress={avancar}>
+      <TouchableOpacity
+        style={s.btn}
+        onPress={avancar}
+        accessibilityRole="button"
+        accessibilityLabel={passo < PASSOS.length - 1 ? 'Próximo passo' : 'Começar a usar o app'}
+      >
         <Text style={s.btnTxt}>
           {passo < PASSOS.length - 1 ? 'Próximo' : 'Começar'}
         </Text>
@@ -94,7 +104,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 28,
     alignItems: 'center',
   },
-  skip: { alignSelf: 'flex-end', padding: 4 },
+  skip: { alignSelf: 'flex-end', minWidth: 44, minHeight: 44, padding: 12, alignItems: 'flex-end', justifyContent: 'center' },
   skipTxt: { fontSize: FONTS.sm, color: COLORS.textMuted },
   iconArea: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   iconCircle: {

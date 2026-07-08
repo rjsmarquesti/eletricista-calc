@@ -8,6 +8,7 @@ import {
   calcularDisjuntor, TipoCarga, ResultadoDisjuntor,
 } from '../../lib/nbr5410'
 import { compartilharTexto } from '../../lib/share'
+import { Ionicons } from '@expo/vector-icons'
 
 type Tensao = 127 | 220
 
@@ -58,7 +59,10 @@ export default function DisjuntorScreen() {
       style={s.bg}
       contentContainerStyle={[s.container, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
     >
-      <Text style={s.pageTitle}>🛡️ Calculadora de Disjuntor</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+        <Ionicons name="shield" size={22} color={COLORS.primary} accessible={false} />
+        <Text style={s.pageTitle}>Calculadora de Disjuntor</Text>
+      </View>
       <Text style={s.pageSub}>NBR 5410 — Proteção do circuito + verificação de DR</Text>
 
       <View style={s.card}>

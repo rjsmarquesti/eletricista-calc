@@ -9,6 +9,7 @@ import {
   calcularBitola, MetodoInstalacao, MaterialConductor, ResultadoBitola,
 } from '../../lib/nbr5410'
 import { compartilharTexto } from '../../lib/share'
+import { Ionicons } from '@expo/vector-icons'
 
 type Tensao = 127 | 220
 
@@ -67,7 +68,10 @@ export default function BitolaScreen() {
       style={s.bg}
       contentContainerStyle={[s.container, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
     >
-      <Text style={s.pageTitle}>⚡ Calculadora de Bitola</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+        <Ionicons name="flash" size={22} color={COLORS.primary} accessible={false} />
+        <Text style={s.pageTitle}>Calculadora de Bitola</Text>
+      </View>
       <Text style={s.pageSub}>NBR 5410 — Seção mínima do condutor</Text>
 
       {/* Entrada: potência ou corrente */}

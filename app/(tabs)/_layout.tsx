@@ -62,6 +62,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="emergencia"  options={{ title: 'Emergência',  tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'warning' : 'warning-outline'} focused={focused} /> }} />
       <Tabs.Screen name="historico"   options={{ title: 'Histórico',   tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'time' : 'time-outline'} focused={focused} /> }} />
       <Tabs.Screen name="normas"      options={{ title: 'Normas',      tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'book' : 'book-outline'} focused={focused} /> }} />
+      <Tabs.Screen name="sobre"       options={{ title: 'Sobre',       tabBarIcon: ({ focused }) => <TabIcon name={focused ? 'information-circle' : 'information-circle-outline'} focused={focused} /> }} />
     </Tabs>
   )
 }

@@ -5,6 +5,8 @@ import {
 } from 'react-native'
 import { router } from 'expo-router'
 import Constants from 'expo-constants'
+import { Ionicons } from '@expo/vector-icons'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { activateOnline } from '../lib/activation'
 import { setToken, setSecure } from '../lib/secure'
 import { setConfig, getConfig, initDB } from '../lib/db'
@@ -24,6 +26,7 @@ function getLockedUntil(): number {
 }
 
 export default function AtivarScreen() {
+  const insets = useSafeAreaInsets()
   const [email, setEmail] = useState('')
   const [codigo, setCodigo] = useState('')
   const [loading, setLoading] = useState(false)
@@ -107,9 +110,9 @@ export default function AtivarScreen() {
 
   return (
     <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[s.container, { paddingTop: insets.top + 24 }]} keyboardShouldPersistTaps="handled">
         <View style={s.logoBox}>
-          <Text style={s.logoEmoji}>⚡</Text>
+          <Ionicons name="flash" size={56} color={COLORS.primary} accessible={false} />
           <Text style={s.logoNome}>Elétrica NBR</Text>
           <Text style={s.badge}>PRO</Text>
           <Text style={s.version}>v{APP_VERSION}</Text>
@@ -120,12 +123,13 @@ export default function AtivarScreen() {
           Insira o e-mail usado na compra e o código recebido por WhatsApp ou e-mail.
         </Text>
         <View style={s.infoBox}>
-          <Text style={s.infoText}>📶 A ativação requer conexão com a internet.</Text>
+          <Ionicons name="wifi" size={14} color={COLORS.primaryDark} accessible={false} />
+          <Text style={s.infoText}> A ativação requer conexão com a internet.</Text>
         </View>
 
         {bloqueado && (
           <View style={s.lockBox}>
-            <Text style={s.lockIcon}>🔒</Text>
+            <Ionicons name="lock-closed" size={28} color={COLORS.danger} accessible={false} />
             <Text style={s.lockText}>Muitas tentativas incorretas.</Text>
             <Text style={s.lockTimer}>Tente novamente em {formatarTempo(segundosRestantes)}</Text>
           </View>
@@ -187,9 +191,8 @@ export default function AtivarScreen() {
 
 const s = StyleSheet.create({
   flex: { flex: 1, backgroundColor: COLORS.bg },
-  container: { flexGrow: 1, padding: 24, paddingTop: 60 },
+  container: { flexGrow: 1, padding: 24 },
   logoBox: { alignItems: 'center', marginBottom: 32 },
-  logoEmoji: { fontSize: 56 },
   logoNome: { fontSize: FONTS['2xl'], fontWeight: '800', color: COLORS.text, marginTop: 8 },
   badge: {
     marginTop: 8, backgroundColor: COLORS.primaryLight, color: COLORS.primaryDark,
@@ -200,10 +203,11 @@ const s = StyleSheet.create({
   title: { fontSize: FONTS['2xl'], fontWeight: '700', color: COLORS.text, marginBottom: 8 },
   sub: { fontSize: FONTS.base, color: COLORS.textMuted, marginBottom: 8, lineHeight: 20 },
   infoBox: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     backgroundColor: COLORS.primaryLight, borderRadius: RADIUS.md,
     paddingHorizontal: 12, paddingVertical: 8, marginBottom: 20,
   },
-  infoText: { fontSize: FONTS.sm, color: COLORS.primaryDark, textAlign: 'center' },
+  infoText: { fontSize: FONTS.sm, color: COLORS.primaryDark },
   lockBox: {
     backgroundColor: COLORS.dangerLight, borderRadius: RADIUS.lg,
     padding: 16, alignItems: 'center', marginBottom: 20,

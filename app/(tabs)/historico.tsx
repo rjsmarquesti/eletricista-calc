@@ -99,7 +99,13 @@ export default function HistoricoScreen() {
                     <Text style={s.cardData}>{formatarData(c.criado_em)}</Text>
                   </View>
                   <View style={s.cardActions}>
-                    <TouchableOpacity onPress={() => confirmarDeletar(c.id)} hitSlop={8}>
+                    <TouchableOpacity
+                      onPress={() => confirmarDeletar(c.id)}
+                      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                      style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Excluir cálculo"
+                    >
                       <Ionicons name="trash-outline" size={18} color={COLORS.danger} />
                     </TouchableOpacity>
                     <Ionicons
