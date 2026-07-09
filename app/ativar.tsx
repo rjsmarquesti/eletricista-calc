@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
+  KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator, Image,
 } from 'react-native'
 import { router } from 'expo-router'
 import Constants from 'expo-constants'
@@ -112,7 +112,7 @@ export default function AtivarScreen() {
     <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={[s.container, { paddingTop: insets.top + 24 }]} keyboardShouldPersistTaps="handled">
         <View style={s.logoBox}>
-          <Ionicons name="flash" size={56} color={COLORS.primary} accessible={false} />
+          <Image source={require('../assets/logo-icon.png')} style={s.logoImg} resizeMode="contain" accessibilityRole="image" accessibilityLabel="Logo Elétrica NBR" />
           <Text style={s.logoNome}>Elétrica NBR</Text>
           <Text style={s.badge}>PRO</Text>
           <Text style={s.version}>v{APP_VERSION}</Text>
@@ -193,6 +193,7 @@ const s = StyleSheet.create({
   flex: { flex: 1, backgroundColor: COLORS.bg },
   container: { flexGrow: 1, padding: 24 },
   logoBox: { alignItems: 'center', marginBottom: 32 },
+  logoImg: { width: 96, height: 96, marginBottom: 8 },
   logoNome: { fontSize: FONTS['2xl'], fontWeight: '800', color: COLORS.text, marginTop: 8 },
   badge: {
     marginTop: 8, backgroundColor: COLORS.primaryLight, color: COLORS.primaryDark,
