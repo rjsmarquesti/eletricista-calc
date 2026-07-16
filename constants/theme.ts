@@ -1,5 +1,5 @@
 export const COLORS = {
-  primary: '#F59E0B',       // âmbar — cor de fio elétrico
+  primary: '#F59E0B',
   primaryLight: '#FEF3C7',
   primaryDark: '#D97706',
   success: '#16A34A',
@@ -16,6 +16,25 @@ export const COLORS = {
   textLight: '#9CA3AF',
 }
 
+export const DARK_COLORS = {
+  primary: '#F59E0B',
+  primaryLight: '#292120',
+  primaryDark: '#FCD34D',
+  success: '#4ADE80',
+  successLight: '#14532D',
+  danger: '#F87171',
+  dangerLight: '#450A0A',
+  warning: '#FB923C',
+  warningLight: '#431407',
+  bg: '#1C1917',
+  card: '#292524',
+  border: '#44403C',
+  text: '#F5F5F4',
+  textMuted: '#A8A29E',
+  textLight: '#78716C',
+}
+
+export type AppColors = typeof COLORS
 export type ColorValue = string
 
 export const FONTS = {
