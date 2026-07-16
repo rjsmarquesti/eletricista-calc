@@ -9,6 +9,7 @@ import {
   calcularCircuitos, AmbienteResidencial, TipoAmbiente, NOME_AMBIENTE,
   ResultadoCircuitos,
 } from '../../lib/nbr5410'
+import { setConfig } from '../../lib/db'
 
 const TIPOS_AMBIENTE: TipoAmbiente[] = [
   'dormitorio', 'sala', 'cozinha', 'banheiro',
@@ -75,6 +76,8 @@ export default function CircuitosScreen() {
     const r = calcularCircuitos(entradas)
     setResultado(r)
     setExpandedIdx(null)
+    // Salva resultado para uso no Diagrama Unifilar
+    setConfig('ultimo_circuito', JSON.stringify(r))
   }
 
   function limpar() {

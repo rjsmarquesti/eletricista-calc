@@ -1,5 +1,6 @@
 import * as Print from 'expo-print'
 import * as Sharing from 'expo-sharing'
+import type { DadosUnifilar } from './unifilar'
 
 let _responsavel = ''
 let _obra = ''
@@ -339,6 +340,83 @@ async function imprimirECompartilhar(html: string, nomeBase: string): Promise<vo
     await Sharing.shareAsync(uri, {
       mimeType: 'application/pdf',
       dialogTitle: `Compartilhar ${nomeBase}`,
+    })
+  }
+}
+
+// ── PDF — Diagrama Unifilar ──────────────────────────────────────────────────
+
+export async function exportarUnifilarPDF(dados: DadosUnifilar): Promise<void> {
+  const agora = new Date()
+  const refUnf = `ENBR-UNF-${agora.getFullYear()}${String(agora.getMonth()+1).padStart(2,'0')}${String(agora.getDate()).padStart(2,'0')}-${String(agora.getHours()).padStart(2,'0')}${String(agora.getMinutes()).padStart(2,'0')}`
+
+  const ramosSVG = dados.ramos.map((r, i) => {
+    const cx = 20 + i * 72
+    const isDR = r.isDR
+    const cor = isDR ? '#DC2626' : '#374151'
+    return `
+      <line x1="${cx}" y1="60" x2="${cx}" y2="76" stroke="#374151" stroke-width="1.5"/>
+      <rect x="${cx-14}" y="76" width="28" height="44" fill="none" stroke="${cor}" stroke-width="1.5" rx="2"/>
+      <line x1="${cx-14}" y1="120" x2="${cx+14}" y2="76" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="${cx}" y="102" text-anchor="middle" fill="${cor}" font-size="10" font-weight="bold">${r.amperagem}A</text>
+      ${isDR ? `<text x="${cx}" y="72" text-anchor="middle" fill="#DC2626" font-size="9" font-weight="bold">DR</text>` : ''}
+      <line x1="${cx}" y1="120" x2="${cx}" y2="140" stroke="#374151" stroke-width="1.5"/>
+      <circle cx="${cx}" cy="154" r="14" fill="none" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="${cx}" y="180" text-anchor="middle" fill="#374151" font-size="9">${r.nome.length > 10 ? r.nome.slice(0,9) + '…' : r.nome}</text>
+      <text x="${cx}" y="192" text-anchor="middle" fill="#6B7280" font-size="8">${r.bitola}</text>
+    `
+  }).join('')
+
+  const svgW = Math.max(400, dados.ramos.length * 72 + 40)
+  const svgH = 210
+
+  const html = `
+    ${header(`Diagrama Unifilar — ${dados.nomeProjeto}`, 'NBR 5410')}
+    <div style="background:#FEF3C7;border-radius:8px;padding:12px 16px;margin-bottom:16px">
+      <p style="margin:0;font-size:13px;color:#374151"><b>Projeto:</b> ${dados.nomeProjeto}</p>
+      <p style="margin:4px 0 0;font-size:12px;color:#6B7280">Tensão: ${dados.tensao} | Corrente geral: ${dados.iGeneral}A | Bitola principal: ${dados.bitolaPrincipal}</p>
+      <p style="margin:2px 0 0;font-size:10px;color:#9CA3AF">Ref.: ${refUnf}</p>
+    </div>
+    <div style="overflow-x:auto;margin-bottom:20px">
+      <svg width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}" style="display:block;max-width:100%">
+        <rect x="4" y="4" width="${svgW-8}" height="52" fill="none" stroke="#F59E0B" stroke-width="2" rx="6"/>
+        <text x="${svgW/2}" y="24" text-anchor="middle" fill="#111827" font-size="13" font-weight="bold">QDC — ${dados.nomeProjeto}</text>
+        <text x="${svgW/2}" y="44" text-anchor="middle" fill="#F59E0B" font-size="11">${dados.tensao} | ${dados.iGeneral}A — ${dados.bitolaPrincipal}</text>
+        <line x1="12" y1="60" x2="${svgW-12}" y2="60" stroke="#F59E0B" stroke-width="5" stroke-linecap="round"/>
+        ${ramosSVG}
+      </svg>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead>
+        <tr style="background:#F59E0B">
+          <th style="padding:8px;text-align:left;color:#fff">#</th>
+          <th style="padding:8px;text-align:left;color:#fff">Circuito</th>
+          <th style="padding:8px;text-align:center;color:#fff">Amperagem</th>
+          <th style="padding:8px;text-align:center;color:#fff">Bitola</th>
+          <th style="padding:8px;text-align:center;color:#fff">DR</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${dados.ramos.map((r, i) => `
+          <tr style="background:${i%2===0?'#FAFAF9':'#fff'}">
+            <td style="padding:6px 8px;color:#6B7280">${i+1}</td>
+            <td style="padding:6px 8px;font-weight:600;color:#111827">${r.nome}</td>
+            <td style="padding:6px 8px;text-align:center;font-weight:700;color:#D97706">${r.amperagem}A</td>
+            <td style="padding:6px 8px;text-align:center;color:#374151">${r.bitola}</td>
+            <td style="padding:6px 8px;text-align:center;color:${r.isDR?'#DC2626':'#9CA3AF'};font-weight:700">${r.isDR ? 'SIM' : '—'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    ${footer('NBR 5410:2004 — Instalações Elétricas de Baixa Tensão')}
+  `
+
+  const { uri } = await Print.printToFileAsync({ html, base64: false })
+  if (await Sharing.isAvailableAsync()) {
+    await Sharing.shareAsync(uri, {
+      UTI: '.pdf',
+      mimeType: 'application/pdf',
+      dialogTitle: 'Compartilhar Diagrama Unifilar',
     })
   }
 }

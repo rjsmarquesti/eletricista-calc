@@ -75,11 +75,17 @@ export default function TabsLayout() {
       <Tabs.Screen name="motores"     options={{ title: 'Motores',     tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} color={color} /> }} />
       <Tabs.Screen name="emergencia"  options={{ title: 'Emergência',  tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'warning' : 'warning-outline'} focused={focused} color={color} /> }} />
 
+      {/* Esquemas de ligação v1.5.0 */}
+      <Tabs.Screen name="esquemas"    options={{ title: 'Esquemas',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'git-branch' : 'git-branch-outline'} focused={focused} color={color} /> }} />
+
       {/* Novas abas v1.4.0 */}
       <Tabs.Screen name="orcamento"   options={{ title: 'Orçamento',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'calculator' : 'calculator-outline'} focused={focused} color={color} /> }} />
       <Tabs.Screen name="conversor"   options={{ title: 'Conversor',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'swap-horizontal' : 'swap-horizontal-outline'} focused={focused} color={color} /> }} />
       <Tabs.Screen name="iluminacao"  options={{ title: 'Iluminação',  tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'sunny' : 'sunny-outline'} focused={focused} color={color} /> }} />
       <Tabs.Screen name="widget"      options={{ title: 'Referência',  tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'grid' : 'grid-outline'} focused={focused} color={color} /> }} />
+
+      {/* Diagrama Unifilar v1.5.0 */}
+      <Tabs.Screen name="unifilar"    options={{ title: 'Unifilar',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'analytics' : 'analytics-outline'} focused={focused} color={color} /> }} />
 
       {/* Utilitários */}
       <Tabs.Screen name="historico"   options={{ title: 'Histórico',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'time' : 'time-outline'} focused={focused} color={color} /> }} />
