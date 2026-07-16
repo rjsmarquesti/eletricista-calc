@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Elétrica NBR",
+    "name": "Eletricomtec Pro",
     "slug": "eletricista-calc",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -13,7 +13,7 @@
     },
     "android": {
       "package": "br.com.divulgabr.eletricanbr",
-      "versionCode": 10,
+      "versionCode": 11,
       "allowBackup": false,
       "adaptiveIcon": {
         "backgroundColor": "#F59E0B",

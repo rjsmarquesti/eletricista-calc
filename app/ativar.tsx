@@ -17,6 +17,10 @@ const MAX_TENTATIVAS = 5
 const LOCKOUT_MS = 30 * 60 * 1000
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+// Bypass local para o Google Play reviewer — não depende de servidor
+const REVIEWER_EMAIL = 'reviewer@divulgabr.com.br'
+const REVIEWER_CODE  = 'ELETRIC2026'
+
 function getTentativas(): number {
   return parseInt(getConfig('activationAttempts') ?? '0')
 }
@@ -75,6 +79,17 @@ export default function AtivarScreen() {
       Alert.alert('E-mail inválido', 'Informe um endereço de e-mail válido.')
       return
     }
+    // Bypass local para o Google Play reviewer
+    if (emailTrimmed === REVIEWER_EMAIL && codigoTrimmed === REVIEWER_CODE) {
+      await setToken('REVIEWER_TOKEN_LOCAL')
+      await setSecure('email', emailTrimmed)
+      setConfig('activationAttempts', '0')
+      setConfig('activationLockedUntil', '0')
+      setConfig('lastTokenVerified', String(Date.now()))
+      router.replace('/(tabs)/bitola')
+      return
+    }
+
     setLoading(true)
     try {
       const result = await activateOnline(emailTrimmed, codigoTrimmed)
@@ -113,7 +128,7 @@ export default function AtivarScreen() {
       <ScrollView contentContainerStyle={[s.container, { paddingTop: insets.top + 24 }]} keyboardShouldPersistTaps="handled">
         <View style={s.logoBox}>
           <Image source={require('../assets/logo-icon.png')} style={s.logoImg} resizeMode="contain" accessibilityRole="image" accessibilityLabel="Logo Elétrica NBR" />
-          <Text style={s.logoNome}>Elétrica NBR</Text>
+          <Text style={s.logoNome}>Eletricomtec Pro</Text>
           <Text style={s.badge}>PRO</Text>
           <Text style={s.version}>v{APP_VERSION}</Text>
         </View>
