@@ -127,7 +127,7 @@ export default function AtivarScreen() {
     <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={[s.container, { paddingTop: insets.top + 24 }]} keyboardShouldPersistTaps="handled">
         <View style={s.logoBox}>
-          <Image source={require('../assets/logo-icon.png')} style={s.logoImg} resizeMode="contain" accessibilityRole="image" accessibilityLabel="Logo Elétrica NBR" />
+          <Image source={require('../assets/apk.png')} style={s.logoImg} resizeMode="contain" accessibilityRole="image" accessibilityLabel="Logo Eletricomtec Pro" />
           <Text style={s.logoNome}>Eletricomtec Pro</Text>
           <Text style={s.badge}>PRO</Text>
           <Text style={s.version}>v{APP_VERSION}</Text>
@@ -135,7 +135,7 @@ export default function AtivarScreen() {
 
         <Text style={s.title}>Ativar aplicativo</Text>
         <Text style={s.sub}>
-          Insira o e-mail usado na compra e o código recebido por WhatsApp ou e-mail.
+          Insira o e-mail utilizado no cadastro e o código recebido por WhatsApp ou e-mail.
         </Text>
         <View style={s.infoBox}>
           <Ionicons name="wifi" size={14} color={COLORS.primaryDark} accessible={false} />
@@ -172,7 +172,7 @@ export default function AtivarScreen() {
             placeholderTextColor={COLORS.textLight}
             autoCapitalize="characters"
             autoCorrect={false}
-            maxLength={8}
+            maxLength={10}
             editable={!bloqueado}
           />
           {!bloqueado && tentativas > 0 && (

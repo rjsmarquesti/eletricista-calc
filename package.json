@@ -1,6 +1,6 @@
 {
   "name": "eletricista-calc",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "main": "index.ts",
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
