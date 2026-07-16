@@ -172,7 +172,7 @@ export default function AtivarScreen() {
             placeholderTextColor={COLORS.textLight}
             autoCapitalize="characters"
             autoCorrect={false}
-            maxLength={10}
+            maxLength={11}
             editable={!bloqueado}
           />
           {!bloqueado && tentativas > 0 && (
