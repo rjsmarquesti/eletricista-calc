@@ -45,7 +45,7 @@ export default function OnboardingScreen() {
 
   function concluir() {
     setConfig('onboarding_done', '1')
-    router.replace('/(tabs)/bitola')
+    router.replace('/(tabs)')
   }
 
   const p = PASSOS[passo]

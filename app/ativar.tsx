@@ -86,7 +86,7 @@ export default function AtivarScreen() {
       setConfig('activationAttempts', '0')
       setConfig('activationLockedUntil', '0')
       setConfig('lastTokenVerified', String(Date.now()))
-      router.replace('/(tabs)/bitola')
+      router.replace('/(tabs)')
       return
     }
 
@@ -113,7 +113,7 @@ export default function AtivarScreen() {
       setConfig('activationAttempts', '0')
       setConfig('activationLockedUntil', '0')
       setConfig('lastTokenVerified', String(Date.now()))
-      router.replace('/(tabs)/bitola')
+      router.replace('/(tabs)')
     } catch {
       Alert.alert('Erro', 'Não foi possível validar o código. Tente novamente.')
     } finally {

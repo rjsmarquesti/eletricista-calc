@@ -7,7 +7,7 @@ import { COLORS } from '../constants/theme'
 
 export default function Index() {
   const [ready, setReady] = useState(false)
-  const [dest, setDest] = useState<'/ativar' | '/onboarding' | '/(tabs)/bitola'>('/ativar')
+  const [dest, setDest] = useState<'/ativar' | '/onboarding' | '/(tabs)'>('/ativar')
 
   useEffect(() => {
     async function boot() {
@@ -15,7 +15,7 @@ export default function Index() {
       const token = await getToken()
       if (!token) { setDest('/ativar'); setReady(true); return }
       const done = getConfig('onboarding_done')
-      setDest(done ? '/(tabs)/bitola' : '/onboarding')
+      setDest(done ? '/(tabs)' : '/onboarding')
       setReady(true)
     }
     boot()

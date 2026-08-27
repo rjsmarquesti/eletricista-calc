@@ -65,32 +65,27 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
       }}
     >
-      {/* Módulos técnicos existentes */}
-      <Tabs.Screen name="bitola"       options={{ title: 'Bitola',      tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'flash' : 'flash-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="disjuntor"   options={{ title: 'Disjuntor',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'shield' : 'shield-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="tomadas"     options={{ title: 'Tomadas',     tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'hardware-chip' : 'hardware-chip-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="circuitos"   options={{ title: 'Circuitos',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'git-network' : 'git-network-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="aterramento" options={{ title: 'Aterram.',    tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'earth' : 'earth-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="spda"        options={{ title: 'SPDA',        tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'thunderstorm' : 'thunderstorm-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="motores"     options={{ title: 'Motores',     tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="emergencia"  options={{ title: 'Emergência',  tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'warning' : 'warning-outline'} focused={focused} color={color} /> }} />
-
-      {/* Esquemas de ligação v1.5.0 */}
-      <Tabs.Screen name="esquemas"    options={{ title: 'Esquemas',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'git-branch' : 'git-branch-outline'} focused={focused} color={color} /> }} />
-
-      {/* Novas abas v1.4.0 */}
-      <Tabs.Screen name="orcamento"   options={{ title: 'Orçamento',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'calculator' : 'calculator-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="conversor"   options={{ title: 'Conversor',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'swap-horizontal' : 'swap-horizontal-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="iluminacao"  options={{ title: 'Iluminação',  tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'sunny' : 'sunny-outline'} focused={focused} color={color} /> }} />
-      <Tabs.Screen name="widget"      options={{ title: 'Referência',  tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'grid' : 'grid-outline'} focused={focused} color={color} /> }} />
-
-      {/* Diagrama Unifilar v1.5.0 */}
-      <Tabs.Screen name="unifilar"    options={{ title: 'Unifilar',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'analytics' : 'analytics-outline'} focused={focused} color={color} /> }} />
-
-      {/* Utilitários */}
+      {/* Abas visíveis — hub + utilitários */}
+      <Tabs.Screen name="index"       options={{ title: 'Início',      tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'apps' : 'apps-outline'} focused={focused} color={color} /> }} />
       <Tabs.Screen name="historico"   options={{ title: 'Histórico',   tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'time' : 'time-outline'} focused={focused} color={color} /> }} />
       <Tabs.Screen name="normas"      options={{ title: 'Normas',      tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'book' : 'book-outline'} focused={focused} color={color} /> }} />
       <Tabs.Screen name="sobre"       options={{ title: 'Sobre',       tabBarIcon: ({ focused, color }) => <TabIcon name={focused ? 'information-circle' : 'information-circle-outline'} focused={focused} color={color} /> }} />
+
+      {/* Módulos de cálculo — acessados via grid da aba Início, ocultos da tab bar */}
+      <Tabs.Screen name="bitola"       options={{ href: null }} />
+      <Tabs.Screen name="disjuntor"    options={{ href: null }} />
+      <Tabs.Screen name="tomadas"      options={{ href: null }} />
+      <Tabs.Screen name="circuitos"    options={{ href: null }} />
+      <Tabs.Screen name="aterramento"  options={{ href: null }} />
+      <Tabs.Screen name="spda"         options={{ href: null }} />
+      <Tabs.Screen name="motores"      options={{ href: null }} />
+      <Tabs.Screen name="emergencia"   options={{ href: null }} />
+      <Tabs.Screen name="esquemas"     options={{ href: null }} />
+      <Tabs.Screen name="orcamento"    options={{ href: null }} />
+      <Tabs.Screen name="conversor"    options={{ href: null }} />
+      <Tabs.Screen name="iluminacao"   options={{ href: null }} />
+      <Tabs.Screen name="widget"       options={{ href: null }} />
+      <Tabs.Screen name="unifilar"     options={{ href: null }} />
     </Tabs>
   )
 }
