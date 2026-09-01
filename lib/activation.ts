@@ -1,3 +1,5 @@
+import { getDeviceId } from './secure'
+
 const API_BASE = 'https://activation.sismeipro.com.br'
 const APP_ID = 'eletrica-nbr'
 
@@ -9,6 +11,7 @@ export interface ActivationResult {
 
 export async function activateOnline(email: string, codigo: string): Promise<ActivationResult> {
   try {
+    const device_id = await getDeviceId()
     const res = await fetch(`${API_BASE}/api/ativar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -16,6 +19,7 @@ export async function activateOnline(email: string, codigo: string): Promise<Act
         app_id: APP_ID,
         email: email.toLowerCase().trim(),
         codigo: codigo.trim().toUpperCase(),
+        device_id,
       }),
       signal: AbortSignal.timeout(10000),
     })
@@ -29,10 +33,11 @@ export async function activateOnline(email: string, codigo: string): Promise<Act
 
 export async function verifyTokenOnline(token: string): Promise<boolean> {
   try {
+    const device_id = await getDeviceId()
     const res = await fetch(`${API_BASE}/api/verificar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ app_id: APP_ID, token }),
+      body: JSON.stringify({ app_id: APP_ID, token, device_id }),
       signal: AbortSignal.timeout(5000),
     })
     return res.ok
