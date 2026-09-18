@@ -97,7 +97,7 @@ export default function SobreScreen() {
       <View style={s.card}>
         <TouchableOpacity
           style={s.suporteBtn}
-          onPress={() => Linking.openURL('https://wa.me/5561XXXXXXXXX?text=Suporte%20Elétrica%20NBR')}
+          onPress={() => Linking.openURL('https://wa.me/5521998812692?text=Suporte%20Elétrica%20NBR')}
           accessibilityRole="button"
           accessibilityLabel="Abrir WhatsApp para suporte"
         >
