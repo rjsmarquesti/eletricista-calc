@@ -26,12 +26,22 @@ export default function TabsLayout() {
       const token = await getToken()
       if (!token) { router.replace('/ativar'); return }
 
-      // Revalida online a cada 7 dias — silencioso
+      // Revalida online a cada 7 dias
       const lastVerified = parseInt(getConfig('lastTokenVerified') ?? '0')
       if (Date.now() - lastVerified > 7 * 24 * 60 * 60 * 1000) {
-        verifyTokenOnline(token).then(valid => {
+        verifyTokenOnline(token).then(({ valid, reason }) => {
           if (!valid) {
-            clearAuth().then(() => router.replace('/ativar'))
+            clearAuth().then(() => {
+              if (reason === 'trial_expired') {
+                Alert.alert(
+                  'Teste grátis expirou',
+                  'Seu período de teste de 15 dias acabou. Ative com o código de compra para continuar usando o Eletricomtec Pro.',
+                  [{ text: 'Entendi', onPress: () => router.replace('/ativar') }],
+                )
+              } else {
+                router.replace('/ativar')
+              }
+            })
           } else {
             setConfig('lastTokenVerified', String(Date.now()))
           }

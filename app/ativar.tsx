@@ -7,7 +7,7 @@ import { router } from 'expo-router'
 import Constants from 'expo-constants'
 import { Ionicons } from '@expo/vector-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { activateOnline } from '../lib/activation'
+import { activateOnline, activateTrial } from '../lib/activation'
 import { setToken, setSecure } from '../lib/secure'
 import { setConfig, getConfig, initDB } from '../lib/db'
 import { COLORS, FONTS, RADIUS } from '../constants/theme'
@@ -34,6 +34,7 @@ export default function AtivarScreen() {
   const [email, setEmail] = useState('')
   const [codigo, setCodigo] = useState('')
   const [loading, setLoading] = useState(false)
+  const [loadingTrial, setLoadingTrial] = useState(false)
   const [tentativas, setTentativas] = useState(0)
   const [segundosRestantes, setSegundosRestantes] = useState(0)
 
@@ -121,6 +122,34 @@ export default function AtivarScreen() {
     }
   }
 
+  async function handleTrial() {
+    const emailTrimmed = email.trim().toLowerCase()
+    if (!emailTrimmed) {
+      Alert.alert('E-mail obrigatório', 'Preencha o e-mail acima para iniciar o teste grátis.')
+      return
+    }
+    if (!EMAIL_REGEX.test(emailTrimmed)) {
+      Alert.alert('E-mail inválido', 'Informe um endereço de e-mail válido.')
+      return
+    }
+    setLoadingTrial(true)
+    try {
+      const result = await activateTrial(emailTrimmed)
+      if (!result.ok) {
+        Alert.alert('Não foi possível iniciar o teste', result.error ?? 'Tente novamente mais tarde.')
+        return
+      }
+      await setToken(result.token!)
+      await setSecure('email', emailTrimmed)
+      setConfig('lastTokenVerified', String(Date.now()))
+      router.replace('/(tabs)')
+    } catch {
+      Alert.alert('Erro', 'Não foi possível iniciar o teste grátis. Tente novamente.')
+    } finally {
+      setLoadingTrial(false)
+    }
+  }
+
   const bloqueado = segundosRestantes > 0
 
   return (
@@ -191,6 +220,26 @@ export default function AtivarScreen() {
               : <Text style={s.btnText}>{bloqueado ? `Bloqueado (${formatarTempo(segundosRestantes)})` : 'Ativar agora'}</Text>
             }
           </TouchableOpacity>
+
+          <View style={s.dividerRow}>
+            <View style={s.dividerLine} />
+            <Text style={s.dividerText}>ou</Text>
+            <View style={s.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={[s.btnSecondary, (loadingTrial || bloqueado) && s.btnDisabled]}
+            onPress={handleTrial}
+            disabled={loadingTrial || bloqueado}
+            activeOpacity={0.8}
+            accessibilityLabel="Testar grátis por 15 dias, usando apenas o e-mail preenchido acima"
+          >
+            {loadingTrial
+              ? <ActivityIndicator color={COLORS.primaryDark} />
+              : <Text style={s.btnSecondaryText}>Testar grátis por 15 dias</Text>
+            }
+          </TouchableOpacity>
+          <Text style={s.trialHint}>Sem código — só o e-mail preenchido acima.</Text>
         </View>
 
         <Text style={s.help}>
@@ -245,6 +294,15 @@ const s = StyleSheet.create({
   btn: { backgroundColor: COLORS.primary, borderRadius: RADIUS.md, paddingVertical: 14, alignItems: 'center', marginTop: 4 },
   btnDisabled: { opacity: 0.6 },
   btnText: { color: '#fff', fontSize: FONTS.md, fontWeight: '700' },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 4 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: COLORS.border },
+  dividerText: { marginHorizontal: 10, fontSize: FONTS.xs, color: COLORS.textLight, fontWeight: '600' },
+  btnSecondary: {
+    backgroundColor: COLORS.primaryLight, borderRadius: RADIUS.md, paddingVertical: 14,
+    alignItems: 'center', marginTop: 8, borderWidth: 1, borderColor: COLORS.primary,
+  },
+  btnSecondaryText: { color: COLORS.primaryDark, fontSize: FONTS.md, fontWeight: '700' },
+  trialHint: { fontSize: FONTS.xs, color: COLORS.textLight, textAlign: 'center', marginTop: 6 },
   help: { marginTop: 24, fontSize: FONTS.sm, color: COLORS.textLight, textAlign: 'center', lineHeight: 18 },
   disclaimer: { marginTop: 12, fontSize: FONTS.xs, color: COLORS.textLight, textAlign: 'center', lineHeight: 16 },
 })
