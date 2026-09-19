@@ -6,9 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { compartilharTexto } from '../../lib/share'
+import { exportarSPDAPDF } from '../../lib/pdf'
 import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularSPDA,
@@ -52,6 +54,7 @@ export default function SPDAScreen() {
   const [resultado, setResultado] = useState<ResultadoSPDA | null>(null)
   const [erro, setErro] = useState('')
   const [mostrarNg, setMostrarNg] = useState(false)
+  const [gerandoPDF, setGerandoPDF] = useState(false)
 
   function calcular() {
     const L = parseFloat(comprimento)
@@ -208,12 +211,41 @@ export default function SPDAScreen() {
         <Text style={s.btnSecundarioTxt}>Limpar</Text>
       </TouchableOpacity>
 
-      {resultado && <Resultado r={resultado} />}
+      {resultado && (
+        <Resultado
+          r={resultado}
+          gerandoPDF={gerandoPDF}
+          onGerarPDF={async () => {
+            setGerandoPDF(true)
+            try {
+              await exportarSPDAPDF({
+                dimensoes: `${comprimento}×${largura}×${altura} m`,
+                fatorForma: LABEL_FATOR_FORMA[fatorForma],
+                Ng: String(Ng),
+                tipoUso: LABEL_USO[tipoUso],
+                Nd: resultado.Nd.toExponential(3),
+                Nc: resultado.Nc.toExponential(3),
+                relacao: resultado.relacaoNdNc.toFixed(3),
+                spda: resultado.spda,
+                nivelProtecao: resultado.nivelProtecao,
+                eficiencia: (resultado.eficienciaMinima * 100).toFixed(1),
+                raioEsfera: String(resultado.raioEsfera),
+                numDescidas: String(resultado.numeroMinDescidas),
+                observacoes: resultado.observacoes,
+              })
+            } catch {
+              Alert.alert('Erro ao gerar PDF', 'Não foi possível gerar o PDF. Tente novamente.')
+            } finally {
+              setGerandoPDF(false)
+            }
+          }}
+        />
+      )}
     </ScrollView>
   )
 }
 
-function Resultado({ r }: { r: ResultadoSPDA }) {
+function Resultado({ r, gerandoPDF, onGerarPDF }: { r: ResultadoSPDA; gerandoPDF: boolean; onGerarPDF: () => void }) {
   const corNP = COR_NP[r.nivelProtecao]
 
   return (
@@ -276,6 +308,9 @@ function Resultado({ r }: { r: ResultadoSPDA }) {
           ].join('\n'))}
         >
           <Text style={s.btnAcaoTxt}>📤 Compartilhar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={s.btnAcao} onPress={onGerarPDF} disabled={gerandoPDF}>
+          <Text style={s.btnAcaoTxt}>{gerandoPDF ? 'Gerando...' : '📄 Gerar PDF'}</Text>
         </TouchableOpacity>
       </View>
     </View>

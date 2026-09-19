@@ -6,9 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { compartilharTexto } from '../../lib/share'
+import { exportarEmergenciaPDF } from '../../lib/pdf'
 import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularEmergencia,
@@ -32,6 +34,7 @@ export default function EmergenciaScreen() {
   const [altura, setAltura] = useState('3.0')
   const [resultado, setResultado] = useState<ResultadoEmergencia | null>(null)
   const [erro, setErro] = useState('')
+  const [gerandoPDF, setGerandoPDF] = useState(false)
 
   function calcular() {
     const A = parseFloat(area)
@@ -135,12 +138,40 @@ export default function EmergenciaScreen() {
         <Text style={s.btnSecundarioTxt}>Limpar</Text>
       </TouchableOpacity>
 
-      {resultado && <Resultado r={resultado} />}
+      {resultado && (
+        <Resultado
+          r={resultado}
+          gerandoPDF={gerandoPDF}
+          onGerarPDF={async () => {
+            setGerandoPDF(true)
+            try {
+              await exportarEmergenciaPDF({
+                tipoEdificio: LABEL_EDIFICIO[tipo],
+                area,
+                rotasFuga: rotas,
+                alturaInstalacao: altura,
+                obrigatorio: resultado.obrigatorio,
+                autonomiaMinima: String(resultado.autonomiaMinima),
+                blocosMinimos: String(resultado.blocosMinimos),
+                potenciaMinBlocoW: String(resultado.potenciaMinBlocoW),
+                fluxoMinRota: String(resultado.fluxoMinRota),
+                fluxoMinArea: String(resultado.fluxoMinArea),
+                alturaMaxFixacao: String(resultado.alturaMaxFixacao),
+                observacoes: resultado.observacoes,
+              })
+            } catch {
+              Alert.alert('Erro ao gerar PDF', 'Não foi possível gerar o PDF. Tente novamente.')
+            } finally {
+              setGerandoPDF(false)
+            }
+          }}
+        />
+      )}
     </ScrollView>
   )
 }
 
-function Resultado({ r }: { r: ResultadoEmergencia }) {
+function Resultado({ r, gerandoPDF, onGerarPDF }: { r: ResultadoEmergencia; gerandoPDF: boolean; onGerarPDF: () => void }) {
   return (
     <View style={s.resultadoWrap}>
       {/* Obrigatoriedade */}
@@ -185,6 +216,9 @@ function Resultado({ r }: { r: ResultadoEmergencia }) {
           ].join('\n'))}
         >
           <Text style={s.btnAcaoTxt}>📤 Compartilhar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={s.btnAcao} onPress={onGerarPDF} disabled={gerandoPDF}>
+          <Text style={s.btnAcaoTxt}>{gerandoPDF ? 'Gerando...' : '📄 Gerar PDF'}</Text>
         </TouchableOpacity>
       </View>
     </View>

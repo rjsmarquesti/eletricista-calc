@@ -39,6 +39,7 @@ export default function AterramentoScreen() {
   const [secaoFase, setSecaoFase] = useState(10)
   const [resultado, setResultado] = useState<ResultadoAterramento | null>(null)
   const [erro, setErro] = useState('')
+  const [gerandoPDF, setGerandoPDF] = useState(false)
 
   function calcular() {
     const L = parseFloat(comprimento)
@@ -184,12 +185,61 @@ export default function AterramentoScreen() {
         <Text style={s.btnSecundarioTxt}>Limpar</Text>
       </TouchableOpacity>
 
-      {resultado && <Resultado r={resultado} />}
+      {resultado && (
+        <Resultado
+          r={resultado}
+          terreno={LABEL_TERRENO[terreno]}
+          aplicacao={LABEL_APLICACAO[aplicacao]}
+          comprimentoHaste={comprimento}
+          diametroHaste={diametro}
+          numHastes={numHastes}
+          secaoFase={String(secaoFase)}
+          gerandoPDF={gerandoPDF}
+          onGerarPDF={async () => {
+            setGerandoPDF(true)
+            try {
+              await exportarAterramentoPDF({
+                terreno: LABEL_TERRENO[terreno],
+                aplicacao: LABEL_APLICACAO[aplicacao],
+                comprimentoHaste: comprimento,
+                diametroHaste: diametro,
+                numHastes,
+                secaoFase: String(secaoFase),
+                resistividadeSolo: String(resultado.resistividadeSolo),
+                resistenciaUmaHaste: resultado.resistenciaUmaHaste.toFixed(2),
+                resistenciaResultante: resultado.resistenciaResultante.toFixed(2),
+                limiteNorma: String(resultado.limiteNorma),
+                aprovado: resultado.aprovado,
+                hastesNecessarias: String(resultado.hastesNecessarias),
+                secaoCaboTerra: String(resultado.secaoCaboTerra),
+                secaoEquipotencializacao: String(resultado.secaoEquipotencializacao),
+                observacoes: resultado.observacoes,
+              })
+            } catch {
+              Alert.alert('Erro ao gerar PDF', 'Não foi possível gerar o PDF. Tente novamente.')
+            } finally {
+              setGerandoPDF(false)
+            }
+          }}
+        />
+      )}
     </ScrollView>
   )
 }
 
-function Resultado({ r }: { r: ResultadoAterramento }) {
+interface ResultadoProps {
+  r: ResultadoAterramento
+  terreno: string
+  aplicacao: string
+  comprimentoHaste: string
+  diametroHaste: string
+  numHastes: string
+  secaoFase: string
+  gerandoPDF: boolean
+  onGerarPDF: () => void
+}
+
+function Resultado({ r, gerandoPDF, onGerarPDF }: ResultadoProps) {
   function textoCompartilhar() {
     return [
       r.aprovado ? '✓ APROVADO' : '✗ REPROVADO',
@@ -236,6 +286,9 @@ function Resultado({ r }: { r: ResultadoAterramento }) {
       <View style={s.acoesRow}>
         <TouchableOpacity style={s.btnAcao} onPress={() => compartilharTexto('Aterramento NBR 5410', textoCompartilhar())}>
           <Text style={s.btnAcaoTxt}>📤 Compartilhar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={s.btnAcao} onPress={onGerarPDF} disabled={gerandoPDF}>
+          <Text style={s.btnAcaoTxt}>{gerandoPDF ? 'Gerando...' : '📄 Gerar PDF'}</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { COLORS, FONTS, RADIUS } from '../../constants/theme'
@@ -8,6 +8,7 @@ import {
   calcularTomadas, TipoAmbienteTomada, NOME_AMBIENTE_TOMADA, ResultadoTomadas,
 } from '../../lib/nbr14136'
 import { compartilharTexto } from '../../lib/share'
+import { exportarTomadasPDF } from '../../lib/pdf'
 
 const AMBIENTES: TipoAmbienteTomada[] = [
   'sala', 'dormitorio', 'escritorio',
@@ -25,6 +26,7 @@ export default function TomadasScreen() {
   const [usarPerimetro, setUsarPerimetro] = useState(false)
   const [resultado, setResultado] = useState<ResultadoTomadas | null>(null)
   const [erro, setErro] = useState<string | null>(null)
+  const [gerandoPDF, setGerandoPDF] = useState(false)
 
   function calcular() {
     setErro(null)
@@ -51,6 +53,27 @@ export default function TomadasScreen() {
     setPerimetro('')
     setResultado(null)
     setErro(null)
+  }
+
+  async function gerarPDF() {
+    if (!resultado) return
+    setGerandoPDF(true)
+    try {
+      await exportarTomadasPDF({
+        ambiente: NOME_AMBIENTE_TOMADA[ambiente],
+        areaOuParede: usarPerimetro ? `${perimetro} m (parede)` : `${area} m²`,
+        qtdMinima: String(resultado.qtdMinima),
+        tipo: resultado.tipo === 'misto' ? '10A e 20A' : resultado.tipo,
+        alturaRecomendada: resultado.alturaRecomendada,
+        drObrigatorio: resultado.drObrigatorio,
+        regra: resultado.regra,
+        observacoes: resultado.observacoes,
+      })
+    } catch {
+      Alert.alert('Erro ao gerar PDF', 'Não foi possível gerar o PDF. Tente novamente.')
+    } finally {
+      setGerandoPDF(false)
+    }
   }
 
   return (
@@ -172,17 +195,26 @@ export default function TomadasScreen() {
             </View>
           ))}
 
-          <TouchableOpacity
-            style={s.btnCompartilhar}
-            onPress={() => compartilharTexto(`Tomadas — ${NOME_AMBIENTE_TOMADA[ambiente]}`, [
-              `Quantidade mínima: ${resultado.qtdMinima} tomadas`,
-              `Tipo: ${resultado.tipo === 'misto' ? '10A e 20A' : resultado.tipo}`,
-              `Altura recomendada: ${resultado.alturaRecomendada}`,
-              resultado.drObrigatorio ? 'DR 30mA obrigatório' : '',
-            ].filter(Boolean).join('\n'))}
-          >
-            <Text style={s.btnCompartilharTxt}>📤 Compartilhar</Text>
-          </TouchableOpacity>
+          <View style={s.acoesRow}>
+            <TouchableOpacity
+              style={[s.btnCompartilhar, { flex: 1 }]}
+              onPress={() => compartilharTexto(`Tomadas — ${NOME_AMBIENTE_TOMADA[ambiente]}`, [
+                `Quantidade mínima: ${resultado.qtdMinima} tomadas`,
+                `Tipo: ${resultado.tipo === 'misto' ? '10A e 20A' : resultado.tipo}`,
+                `Altura recomendada: ${resultado.alturaRecomendada}`,
+                resultado.drObrigatorio ? 'DR 30mA obrigatório' : '',
+              ].filter(Boolean).join('\n'))}
+            >
+              <Text style={s.btnCompartilharTxt}>📤 Compartilhar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[s.btnCompartilhar, { flex: 1 }]}
+              onPress={gerarPDF}
+              disabled={gerandoPDF}
+            >
+              <Text style={s.btnCompartilharTxt}>{gerandoPDF ? 'Gerando...' : '📄 Gerar PDF'}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -245,4 +277,5 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
   },
   btnCompartilharTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
+  acoesRow: { flexDirection: 'row', gap: 8 },
 })

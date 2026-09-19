@@ -6,9 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { compartilharTexto } from '../../lib/share'
+import { exportarMotorPDF } from '../../lib/pdf'
 import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularMotor,
@@ -38,6 +40,7 @@ export default function MotoresScreen() {
   const [metodo, setMetodo] = useState<MetodoInstalacao>('B1')
   const [resultado, setResultado] = useState<ResultadoMotor | null>(null)
   const [erro, setErro] = useState('')
+  const [gerandoPDF, setGerandoPDF] = useState(false)
 
   const tensoes = fases === 3 ? TENSOES_3F : TENSOES_1F
 
@@ -202,12 +205,49 @@ export default function MotoresScreen() {
         <Text style={s.btnSecundarioTxt}>Limpar</Text>
       </TouchableOpacity>
 
-      {resultado && <Resultado r={resultado} partida={tipoPartida} />}
+      {resultado && (
+        <Resultado
+          r={resultado}
+          partida={tipoPartida}
+          gerandoPDF={gerandoPDF}
+          onGerarPDF={async () => {
+            setGerandoPDF(true)
+            try {
+              await exportarMotorPDF({
+                potencia: String(potencia),
+                tensao: String(tensao),
+                fases: fases === 3 ? 'Trifásico' : 'Monofásico',
+                tipoPartida: LABEL_PARTIDA[tipoPartida].titulo,
+                correnteNominal: String(resultado.correnteNominal),
+                correntePartida: String(resultado.correntePartida),
+                fatorPartida: String(resultado.fatorPartida),
+                disjuntorMotor: String(resultado.disjuntorMotor),
+                contator: String(resultado.contatora),
+                releMin: String(resultado.releTermico.min),
+                releMax: String(resultado.releTermico.max),
+                secaoCabo: String(resultado.secaoCabo),
+                observacoes: resultado.observacoes,
+              })
+            } catch {
+              Alert.alert('Erro ao gerar PDF', 'Não foi possível gerar o PDF. Tente novamente.')
+            } finally {
+              setGerandoPDF(false)
+            }
+          }}
+        />
+      )}
     </ScrollView>
   )
 }
 
-function Resultado({ r, partida }: { r: ResultadoMotor; partida: TipoPartida }) {
+interface ResultadoMotorProps {
+  r: ResultadoMotor
+  partida: TipoPartida
+  gerandoPDF: boolean
+  onGerarPDF: () => void
+}
+
+function Resultado({ r, partida, gerandoPDF, onGerarPDF }: ResultadoMotorProps) {
   return (
     <View style={s.resultadoWrap}>
       {/* Correntes */}
@@ -254,6 +294,9 @@ function Resultado({ r, partida }: { r: ResultadoMotor; partida: TipoPartida }) 
           ].join('\n'))}
         >
           <Text style={s.btnAcaoTxt}>📤 Compartilhar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={s.btnAcao} onPress={onGerarPDF} disabled={gerandoPDF}>
+          <Text style={s.btnAcaoTxt}>{gerandoPDF ? 'Gerando...' : '📄 Gerar PDF'}</Text>
         </TouchableOpacity>
       </View>
     </View>

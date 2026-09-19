@@ -4,6 +4,7 @@ import {
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { compartilharTexto } from '../../lib/share'
+import { exportarCircuitosPDF } from '../../lib/pdf'
 import { COLORS, FONTS, RADIUS } from '../../constants/theme'
 import {
   calcularCircuitos, AmbienteResidencial, TipoAmbiente, NOME_AMBIENTE,
@@ -36,6 +37,7 @@ export default function CircuitosScreen() {
   const [ambientes, setAmbientes] = useState<AmbienteEntry[]>([])
   const [resultado, setResultado] = useState<ResultadoCircuitos | null>(null)
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null)
+  const [gerandoPDF, setGerandoPDF] = useState(false)
 
   function addAmbiente(tipo: TipoAmbiente) {
     setAmbientes(prev => [...prev, { tipo, area: '', cargas: [] }])
@@ -84,6 +86,23 @@ export default function CircuitosScreen() {
     setAmbientes([])
     setResultado(null)
     setExpandedIdx(null)
+  }
+
+  async function gerarPDF() {
+    if (!resultado) return
+    setGerandoPDF(true)
+    try {
+      await exportarCircuitosPDF({
+        totalAmbientes: String(ambientes.length),
+        totalCircuitos: String(resultado.totalCircuitos),
+        circuitos: resultado.circuitos,
+        observacoes: resultado.observacoes,
+      })
+    } catch {
+      Alert.alert('Erro ao gerar PDF', 'Não foi possível gerar o PDF. Tente novamente.')
+    } finally {
+      setGerandoPDF(false)
+    }
   }
 
   const TIPO_BADGE: Record<string, { label: string; cor: string; bg: string }> = {
@@ -196,15 +215,24 @@ export default function CircuitosScreen() {
             </View>
           ))}
 
-          <TouchableOpacity
-            style={s.btnCompartilhar}
-            onPress={() => compartilharTexto('Circuitos NBR 5410', [
-              `Total: ${resultado.totalCircuitos} circuitos`,
-              ...resultado.circuitos.map(c => `• ${c.nome} (${c.tipo}): ${c.descricao}`),
-            ].join('\n'))}
-          >
-            <Text style={s.btnCompartilharTxt}>📤 Compartilhar</Text>
-          </TouchableOpacity>
+          <View style={s.acoesRow}>
+            <TouchableOpacity
+              style={[s.btnCompartilhar, { flex: 1 }]}
+              onPress={() => compartilharTexto('Circuitos NBR 5410', [
+                `Total: ${resultado.totalCircuitos} circuitos`,
+                ...resultado.circuitos.map(c => `• ${c.nome} (${c.tipo}): ${c.descricao}`),
+              ].join('\n'))}
+            >
+              <Text style={s.btnCompartilharTxt}>📤 Compartilhar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[s.btnCompartilhar, { flex: 1 }]}
+              onPress={gerarPDF}
+              disabled={gerandoPDF}
+            >
+              <Text style={s.btnCompartilharTxt}>{gerandoPDF ? 'Gerando...' : '📄 Gerar PDF'}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -278,4 +306,5 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
   },
   btnCompartilharTxt: { fontSize: FONTS.sm, fontWeight: '700', color: COLORS.text },
+  acoesRow: { flexDirection: 'row', gap: 8 },
 })

@@ -101,7 +101,7 @@ export async function exportarBitolaPDF(dados: DadosBitolaPDF): Promise<void> {
     </div>
     ${table([
       rowHtml('Corrente de projeto', dados.correnteCalc),
-      rowHtml('Capacidade nominal (${dados.metodo})', dados.capacidadeNominal),
+      rowHtml(`Capacidade nominal (${dados.metodo})`, dados.capacidadeNominal),
       rowHtml('Queda de tensão', dados.quedaTensao + (dados.quedaAlerta ? ' ⚠️ ACIMA DE 4%' : ' ✓')),
     ])}
     ${dados.quedaAlerta ? `<div style="background:#FFFBEB;border:1px solid #F59E0B;border-radius:6px;padding:10px;margin:8px 0"><p style="margin:0;font-size:12px;color:#92400E">⚠️ Queda de tensão acima de 4% (limite NBR 5410 item 6.2.7). Considere aumentar a seção do cabo ou reduzir o comprimento.</p></div>` : ''}
@@ -330,6 +330,153 @@ export async function exportarMotorPDF(dados: DadosMotorPDF): Promise<void> {
     </body></html>
   `
   await imprimirECompartilhar(html, 'Motor-IEC60947')
+}
+
+// ── PDF — Tomadas ────────────────────────────────────────────────────────────
+
+interface DadosTomadasPDF {
+  ambiente: string
+  areaOuParede: string
+  qtdMinima: string
+  tipo: string
+  alturaRecomendada: string
+  drObrigatorio: boolean
+  regra: string
+  observacoes: string[]
+}
+
+export async function exportarTomadasPDF(dados: DadosTomadasPDF): Promise<void> {
+  const html = `
+    <!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      body{font-family:sans-serif;margin:0;padding:0;background:#fff}
+      @page{size:A4;margin:20mm}
+    </style></head><body>
+    ${header(`Tomadas — ${dados.ambiente}`, 'NBR 5410 + NBR 14136')}
+    <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
+    ${table([
+      rowHtml('Ambiente', dados.ambiente),
+      rowHtml('Área / parede', dados.areaOuParede),
+    ])}
+    <h3 style="color:#F59E0B;font-size:14px;margin-top:20px;margin-bottom:4px">Resultado</h3>
+    <div style="background:#FEF3C7;border-radius:8px;padding:16px;text-align:center;margin-bottom:12px">
+      <p style="margin:0;color:#92400E;font-size:13px">Quantidade mínima de tomadas</p>
+      <p style="margin:4px 0 0;color:#92400E;font-size:32px;font-weight:900">${dados.qtdMinima}</p>
+    </div>
+    ${table([
+      rowHtml('Tipo de tomada', dados.tipo),
+      rowHtml('Altura recomendada', dados.alturaRecomendada),
+    ])}
+    ${dados.drObrigatorio ? `<div style="background:#FFFBEB;border:1px solid #F59E0B;border-radius:6px;padding:10px;margin:8px 0"><p style="margin:0;font-size:12px;color:#92400E">⚠️ DR 30mA obrigatório neste ambiente (NBR 5410 item 6.3.6).</p></div>` : ''}
+    <h3 style="color:#F59E0B;font-size:14px;margin-top:16px;margin-bottom:4px">Regra aplicada</h3>
+    <p style="font-size:12px;color:#374151;line-height:18px">${dados.regra}</p>
+    ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
+    ${footer('NBR 5410:2004 • NBR 14136:2012')}
+    </body></html>
+  `
+  await imprimirECompartilhar(html, 'Tomadas-NBR14136')
+}
+
+// ── PDF — Circuitos ──────────────────────────────────────────────────────────
+
+interface DadosCircuitosPDF {
+  totalAmbientes: string
+  totalCircuitos: string
+  circuitos: { nome: string; tipo: string; descricao: string }[]
+  observacoes: string[]
+}
+
+export async function exportarCircuitosPDF(dados: DadosCircuitosPDF): Promise<void> {
+  const html = `
+    <!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      body{font-family:sans-serif;margin:0;padding:0;background:#fff}
+      @page{size:A4;margin:20mm}
+    </style></head><body>
+    ${header('Planejador de Circuitos — NBR 5410', 'NBR 5410:2004')}
+    <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
+    ${table([
+      rowHtml('Ambientes planejados', dados.totalAmbientes),
+    ])}
+    <h3 style="color:#F59E0B;font-size:14px;margin-top:20px;margin-bottom:4px">Resultado</h3>
+    <div style="background:#FEF3C7;border-radius:8px;padding:16px;text-align:center;margin-bottom:12px">
+      <p style="margin:0;color:#92400E;font-size:13px">Total de circuitos necessários</p>
+      <p style="margin:4px 0 0;color:#92400E;font-size:32px;font-weight:900">${dados.totalCircuitos}</p>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">
+      <thead>
+        <tr style="background:#F59E0B">
+          <th style="padding:8px;text-align:left;color:#fff">Circuito</th>
+          <th style="padding:8px;text-align:center;color:#fff">Tipo</th>
+          <th style="padding:8px;text-align:left;color:#fff">Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${dados.circuitos.map((c, i) => `
+          <tr style="background:${i%2===0?'#FAFAF9':'#fff'}">
+            <td style="padding:6px 8px;font-weight:600;color:#111827">${c.nome}</td>
+            <td style="padding:6px 8px;text-align:center;color:#D97706;font-weight:700">${c.tipo}</td>
+            <td style="padding:6px 8px;color:#374151">${c.descricao}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
+    ${footer('NBR 5410:2004 — Instalações Elétricas de Baixa Tensão')}
+    </body></html>
+  `
+  await imprimirECompartilhar(html, 'Circuitos-NBR5410')
+}
+
+// ── PDF — Iluminação de Emergência ───────────────────────────────────────────
+
+interface DadosEmergenciaPDF {
+  tipoEdificio: string
+  area: string
+  rotasFuga: string
+  alturaInstalacao: string
+  obrigatorio: boolean
+  autonomiaMinima: string
+  blocosMinimos: string
+  potenciaMinBlocoW: string
+  fluxoMinRota: string
+  fluxoMinArea: string
+  alturaMaxFixacao: string
+  observacoes: string[]
+}
+
+export async function exportarEmergenciaPDF(dados: DadosEmergenciaPDF): Promise<void> {
+  const html = `
+    <!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      body{font-family:sans-serif;margin:0;padding:0;background:#fff}
+      @page{size:A4;margin:20mm}
+    </style></head><body>
+    ${header('Iluminação de Emergência — NBR 10898', 'NBR 10898:2013')}
+    <h3 style="color:#F59E0B;font-size:14px;margin-bottom:4px">Dados de entrada</h3>
+    ${table([
+      rowHtml('Tipo de edificação', dados.tipoEdificio),
+      rowHtml('Área total', dados.area + ' m²'),
+      rowHtml('Rotas de fuga', dados.rotasFuga),
+      rowHtml('Altura de instalação', dados.alturaInstalacao + ' m'),
+    ])}
+    <h3 style="color:#F59E0B;font-size:14px;margin-top:20px;margin-bottom:4px">Resultado</h3>
+    <div style="background:${dados.obrigatorio ? '#FEF2F2' : '#FFFBEB'};border:2px solid ${dados.obrigatorio ? '#DC2626' : '#F59E0B'};border-radius:8px;padding:14px;text-align:center;margin-bottom:12px">
+      <p style="margin:0;font-size:18px;font-weight:900;color:${dados.obrigatorio ? '#DC2626' : '#92400E'}">${dados.obrigatorio ? '⚠️ OBRIGATÓRIO' : 'ℹ️ RECOMENDADO'}</p>
+      <p style="margin:4px 0 0;font-size:13px;color:#6B7280">${dados.autonomiaMinima}h de autonomia mínima</p>
+    </div>
+    <div style="background:#FEF3C7;border-radius:8px;padding:16px;text-align:center;margin-bottom:12px">
+      <p style="margin:0;color:#92400E;font-size:13px">Blocos autônomos mínimos</p>
+      <p style="margin:4px 0 0;color:#92400E;font-size:32px;font-weight:900">${dados.blocosMinimos}</p>
+      <p style="margin:2px 0 0;color:#92400E;font-size:12px">blocos de ≥ ${dados.potenciaMinBlocoW}W</p>
+    </div>
+    ${table([
+      rowHtml('Iluminância mín. (rota de fuga)', dados.fluxoMinRota + ' lux'),
+      rowHtml('Iluminância mín. (área geral)', dados.fluxoMinArea + ' lux'),
+      rowHtml('Altura máx. de fixação', dados.alturaMaxFixacao + ' m'),
+    ])}
+    ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}
+    ${footer('NBR 10898:2013')}
+    </body></html>
+  `
+  await imprimirECompartilhar(html, 'Emergencia-NBR10898')
 }
 
 // ── Utilitário ────────────────────────────────────────────────────────────────
