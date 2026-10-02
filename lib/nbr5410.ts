@@ -110,8 +110,8 @@ export function calcularBitola(e: EntradaBitola): ResultadoBitola {
   const bitolaReal = idx >= 0 ? linha.secao : tabela[tabela.length - 1].secao
 
   // Queda de tensão: ΔU% = (2 × ρ × L × I) / (S × U) × 100
-  // ρ cobre ≈ 0.0175 Ω·mm²/m, alumínio ≈ 0.0280 Ω·mm²/m
-  const rho = e.material === 'cobre' ? 0.0175 : 0.0280
+  // ρ cobre ≈ 0.0216 Ω·mm²/m (à temperatura de operação, 70 °C), alumínio ≈ 0.0280 Ω·mm²/m
+  const rho = e.material === 'cobre' ? 0.0216 : 0.0280
   const quedaV = (2 * rho * e.comprimento * correnteProj) / bitolaReal
   const quedaPct = (quedaV / e.tensao) * 100
 
