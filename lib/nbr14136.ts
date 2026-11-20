@@ -40,7 +40,7 @@ const ALTURA_TOMADA: Record<TipoAmbienteTomada, string> = {
   hall:         '0,40 m',
 }
 
-// Ambientes que exigem DR (NBR 5410 item 6.3.6)
+// Ambientes que exigem DR (NBR 5410 item 5.1.3.2.2)
 const EXIGE_DR: TipoAmbienteTomada[] = ['banheiro', 'lavabo', 'cozinha', 'area_servico', 'garagem', 'varanda']
 
 export function calcularTomadas(e: EntradaTomadas): ResultadoTomadas {
@@ -98,7 +98,7 @@ export function calcularTomadas(e: EntradaTomadas): ResultadoTomadas {
   }
 
   if (drObrigatorio) {
-    observacoes.push('DR 30mA obrigatório (NBR 5410 item 6.3.6). Recomenda-se DR tipo A para cargas eletrônicas.')
+    observacoes.push('DR 30mA obrigatório (NBR 5410 item 5.1.3.2.2). Recomenda-se DR tipo A para cargas eletrônicas.')
   }
 
   observacoes.push('Todas as tomadas devem ter aterramento (pino T).')

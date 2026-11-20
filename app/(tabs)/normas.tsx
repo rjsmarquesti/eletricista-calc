@@ -99,7 +99,7 @@ function TabelaBitola() {
           <Text style={[s.td, s.col2]}>{l.c} A</Text>
         </View>
       ))}
-      <Text style={s.legenda}>B1: Embutido em parede  B2: Eletroduto superfície  C: Fixado na parede</Text>
+      <Text style={s.legenda}>B1: Condutores isolados em eletroduto  B2: Cabo multipolar em eletroduto  C: Cabos sobre parede/teto ou direto em alvenaria. Valores para 3 condutores carregados (NBR 5410 Tab. 36).</Text>
     </View>
   )
 }
@@ -213,7 +213,7 @@ function TabelaCircuitosMin() {
         </View>
       ))}
       <Text style={s.legenda}>
-        DR 30mA obrigatório: banheiro, cozinha, área de serviço, garagem, área externa e piscina (item 6.3.6).
+        DR 30mA obrigatório: banheiro, cozinha, área de serviço, garagem, área externa e piscina (item 5.1.3.2.2).
       </Text>
     </View>
   )

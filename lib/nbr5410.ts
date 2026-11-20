@@ -4,43 +4,44 @@
  * AVISO: este app é orientativo — não substitui ART/CREA do responsável técnico.
  */
 
-// ── Tabela 36 da NBR 5410 — Corrente admissível (A) por seção e método de instalação ──
-// Cobre, isolação PVC (70°C), temperatura ambiente 30°C
-// Método B1 = embutido em parede/conduto (mais restritivo)
-// Método A1 = em eletroduto embutido em parede
-// Método B2 = em eletroduto na superfície
-// Método C  = cabos fixados diretamente na parede (mais favorável)
+// ── Tabela 36 da NBR 5410 — Capacidade de condução de corrente (A) por seção e método de referência ──
+// Cobre/alumínio, isolação PVC (70°C), temperatura ambiente 30°C, 3 condutores carregados
+// (valores de 3 condutores também servem, a favor da segurança, para circuitos de 2 condutores).
+// Métodos de referência (Tabela 33 da NBR 5410):
+//   B1 = condutores isolados em eletroduto (aparente ou embutido em alvenaria)
+//   B2 = cabo multipolar em eletroduto
+//   C  = cabos sobre parede/teto ou embutidos diretamente em alvenaria
 
 export interface LinhaCapacidade {
   secao: number    // mm²
-  b1: number       // corrente admissível embutido em conduto na parede (A)
-  b2: number       // corrente admissível em eletroduto na superfície (A)
-  c: number        // corrente admissível fixado na parede (A)
+  b1: number       // capacidade de condução, método B1 (A)
+  b2: number       // capacidade de condução, método B2 (A)
+  c: number        // capacidade de condução, método C (A)
 }
 
 export const TABELA_CAPACIDADE_COBRE: LinhaCapacidade[] = [
-  { secao: 1.5,  b1: 13,  b2: 15,  c: 17.5 },
-  { secao: 2.5,  b1: 17.5, b2: 21, c: 24   },
-  { secao: 4,    b1: 23,  b2: 28,  c: 32   },
-  { secao: 6,    b1: 29,  b2: 36,  c: 41   },
-  { secao: 10,   b1: 40,  b2: 50,  c: 57   },
-  { secao: 16,   b1: 54,  b2: 68,  c: 76   },
-  { secao: 25,   b1: 70,  b2: 89,  c: 96   },
-  { secao: 35,   b1: 86,  b2: 110, c: 119  },
-  { secao: 50,   b1: 104, b2: 134, c: 144  },
-  { secao: 70,   b1: 133, b2: 171, c: 184  },
-  { secao: 95,   b1: 161, b2: 207, c: 223  },
-  { secao: 120,  b1: 186, b2: 239, c: 259  },
+  { secao: 1.5,   b1: 15.5,  b2: 15,    c: 17.5 },
+  { secao: 2.5,   b1: 21,    b2: 20,    c: 24 },
+  { secao: 4,     b1: 28,    b2: 27,    c: 32 },
+  { secao: 6,     b1: 36,    b2: 34,    c: 41 },
+  { secao: 10,    b1: 50,    b2: 46,    c: 57 },
+  { secao: 16,    b1: 68,    b2: 62,    c: 76 },
+  { secao: 25,    b1: 89,    b2: 80,    c: 96 },
+  { secao: 35,    b1: 110,   b2: 99,    c: 119 },
+  { secao: 50,    b1: 134,   b2: 118,   c: 144 },
+  { secao: 70,    b1: 171,   b2: 149,   c: 184 },
+  { secao: 95,    b1: 207,   b2: 179,   c: 223 },
+  { secao: 120,   b1: 239,   b2: 206,   c: 259 },
 ]
 
 export const TABELA_CAPACIDADE_ALUMINIO: LinhaCapacidade[] = [
-  { secao: 16,   b1: 42,  b2: 53,  c: 59   },
-  { secao: 25,   b1: 54,  b2: 70,  c: 75   },
-  { secao: 35,   b1: 67,  b2: 86,  c: 93   },
-  { secao: 50,   b1: 81,  b2: 104, c: 113  },
-  { secao: 70,   b1: 103, b2: 133, c: 143  },
-  { secao: 95,   b1: 125, b2: 161, c: 174  },
-  { secao: 120,  b1: 145, b2: 186, c: 202  },
+  { secao: 16,    b1: 53,    b2: 48,    c: 59 },
+  { secao: 25,    b1: 70,    b2: 62,    c: 73 },
+  { secao: 35,    b1: 86,    b2: 77,    c: 90 },
+  { secao: 50,    b1: 104,   b2: 92,    c: 110 },
+  { secao: 70,    b1: 133,   b2: 116,   c: 140 },
+  { secao: 95,    b1: 161,   b2: 139,   c: 170 },
+  { secao: 120,   b1: 186,   b2: 160,   c: 197 },
 ]
 
 // ── Fatores de correção de temperatura (Tabela 40 da NBR 5410) ──
@@ -72,7 +73,7 @@ export interface EntradaBitola {
   potencia?: number        // W (alternativo à corrente)
   corrente?: number        // A (direto)
   tensao: 127 | 220
-  comprimento: number      // m (ida + volta)
+  comprimento: number      // m — só a distância de ida (quadro → carga); a fórmula já considera ida e volta
   metodo: MetodoInstalacao
   material: MaterialConductor
   temperatura?: number     // °C ambiente (padrão 30)
@@ -160,7 +161,7 @@ const FATOR_POTENCIA_PADRAO: Record<TipoCarga, number> = {
   motor: 0.80,
 }
 
-// Ambientes onde DR é obrigatório (NBR 5410 item 6.3.6)
+// Ambientes onde DR é obrigatório (NBR 5410 item 5.1.3.2.2)
 const AMBIENTES_DR = [
   'banheiro', 'lavabo', 'wc',
   'cozinha', 'copa',
@@ -189,7 +190,7 @@ export function calcularDisjuntor(e: EntradaDisjuntor): ResultadoDisjuntor {
     disjuntorIn,
     drObrigatorio,
     motivoDR: drObrigatorio
-      ? `DR obrigatório por NBR 5410 item 6.3.6: ${ambDR.join(', ')}`
+      ? `DR obrigatório por NBR 5410 item 5.1.3.2.2: ${ambDR.join(', ')}`
       : undefined,
     fatorPotencia: fp,
   }
@@ -318,7 +319,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
   )
   if (areasMolhadas.length > 0) {
     observacoes.push(
-      `DR obrigatório (NBR 5410 item 6.3.6) nos circuitos: ${areasMolhadas.map(a => NOME_AMBIENTE[a.tipo]).join(', ')}.`
+      `DR obrigatório (NBR 5410 item 5.1.3.2.2) nos circuitos: ${areasMolhadas.map(a => NOME_AMBIENTE[a.tipo]).join(', ')}.`
     )
   }
 

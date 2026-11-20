@@ -28,7 +28,7 @@ function header(titulo: string, norma: string): string {
       <div>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:26px">⚡</span>
-          <span style="font-size:22px;font-weight:900;color:#111827">Elétrica NBR</span>
+          <span style="font-size:22px;font-weight:900;color:#111827">Eletricomtec Pro</span>
         </div>
         <p style="margin:2px 0 0;font-size:13px;font-weight:700;color:#374151">${titulo}</p>
         <p style="margin:2px 0 0;font-size:11px;color:#9CA3AF">Ref. normativa: ${norma}</p>
@@ -47,7 +47,7 @@ function footer(normas: string): string {
   return `
     <div style="margin-top:32px;padding-top:12px;border-top:1px solid #E5E7EB">
       <p style="font-size:9px;color:#9CA3AF;text-align:center;line-height:16px">
-        ⚠️ Documento orientativo gerado pelo app Elétrica NBR — não substitui a responsabilidade técnica de engenheiro ou técnico eletricista habilitado (ART/CREA/CFT).<br>
+        ⚠️ Documento orientativo gerado pelo app Eletricomtec Pro — não substitui a responsabilidade técnica de engenheiro ou técnico eletricista habilitado (ART/CREA/CFT).<br>
         ${normas}
       </p>
     </div>
@@ -366,7 +366,7 @@ export async function exportarTomadasPDF(dados: DadosTomadasPDF): Promise<void> 
       rowHtml('Tipo de tomada', dados.tipo),
       rowHtml('Altura recomendada', dados.alturaRecomendada),
     ])}
-    ${dados.drObrigatorio ? `<div style="background:#FFFBEB;border:1px solid #F59E0B;border-radius:6px;padding:10px;margin:8px 0"><p style="margin:0;font-size:12px;color:#92400E">⚠️ DR 30mA obrigatório neste ambiente (NBR 5410 item 6.3.6).</p></div>` : ''}
+    ${dados.drObrigatorio ? `<div style="background:#FFFBEB;border:1px solid #F59E0B;border-radius:6px;padding:10px;margin:8px 0"><p style="margin:0;font-size:12px;color:#92400E">⚠️ DR 30mA obrigatório neste ambiente (NBR 5410 item 5.1.3.2.2).</p></div>` : ''}
     <h3 style="color:#F59E0B;font-size:14px;margin-top:16px;margin-bottom:4px">Regra aplicada</h3>
     <p style="font-size:12px;color:#374151;line-height:18px">${dados.regra}</p>
     ${dados.observacoes.map(o => `<p style="font-size:12px;color:#92400E;margin:4px 0">• ${o}</p>`).join('')}

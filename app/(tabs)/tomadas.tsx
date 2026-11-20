@@ -180,7 +180,7 @@ export default function TomadasScreen() {
           {resultado.drObrigatorio && (
             <View style={s.drBox}>
               <Text style={s.drTitulo}>⚠️ DR Obrigatório</Text>
-              <Text style={s.drDesc}>DR 30mA obrigatório neste ambiente (NBR 5410 item 6.3.6).</Text>
+              <Text style={s.drDesc}>DR 30mA obrigatório neste ambiente (NBR 5410 item 5.1.3.2.2).</Text>
             </View>
           )}
 

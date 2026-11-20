@@ -47,7 +47,7 @@ export default function IluminacaoScreen() {
   function compartilhar() {
     if (!resultado) return
     const amb = AMBIENTES.find(a => a.key === ambiente)
-    compartilharTexto('Iluminação NBR ISO/CIE 8995-1 — Elétrica NBR', [
+    compartilharTexto('Iluminação NBR ISO/CIE 8995-1 — Eletricomtec Pro', [
       `Ambiente: ${amb?.label}`,
       `Iluminância mínima: ${resultado.iluminanciaMinima} lux`,
       `Fluxo total necessário: ${resultado.fluxoTotal} lm`,

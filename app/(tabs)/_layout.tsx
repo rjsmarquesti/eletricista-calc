@@ -51,7 +51,7 @@ export default function TabsLayout() {
       // Alerta de normas — in-app, zero dependências externas
       const alerta = checkNormasAlert()
       if (alerta.hasAlert) {
-        Alert.alert('Novidades — Elétrica NBR', alerta.mensagem, [
+        Alert.alert('Novidades — Eletricomtec Pro', alerta.mensagem, [
           { text: 'Ver mais tarde', style: 'cancel' },
           { text: 'OK, entendi', onPress: marcarAlertaVisto },
         ])

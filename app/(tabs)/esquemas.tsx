@@ -40,7 +40,7 @@ export default function EsquemasScreen() {
   function compartilhar() {
     if (!selecionado) return
     compartilharTexto(
-      `${selecionado.titulo} — Elétrica NBR`,
+      `${selecionado.titulo} — Eletricomtec Pro`,
       [
         selecionado.descricao,
         '',

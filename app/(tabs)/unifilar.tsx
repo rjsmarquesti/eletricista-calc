@@ -75,7 +75,7 @@ export default function UnifilarScreen() {
         `${i + 1}. ${r.nome} — ${r.amperagem}A — ${r.bitola}${r.isDR ? ' (DR)' : ''}`
       ),
     ]
-    compartilharTexto('Diagrama Unifilar — Elétrica NBR', linhas.join('\n'))
+    compartilharTexto('Diagrama Unifilar — Eletricomtec Pro', linhas.join('\n'))
   }
 
   return (

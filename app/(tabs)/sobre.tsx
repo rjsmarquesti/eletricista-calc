@@ -39,10 +39,10 @@ export default function SobreScreen() {
             source={require('../../assets/logo-icon.png')}
             style={s.iconImg}
             resizeMode="contain"
-            accessibilityLabel="Ícone Elétrica NBR"
+            accessibilityLabel="Ícone Eletricomtec Pro"
           />
           <View style={s.appInfo}>
-            <Text style={s.appNome}>Elétrica NBR</Text>
+            <Text style={s.appNome}>Eletricomtec Pro</Text>
             <View style={s.badgeRow}>
               <View style={s.badge}><Text style={s.badgeTxt}>PRO</Text></View>
               <Text style={s.version}>v{APP_VERSION}</Text>

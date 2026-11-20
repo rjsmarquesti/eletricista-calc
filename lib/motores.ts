@@ -1,6 +1,8 @@
 // Motores elétricos e comandos — NBR IEC 60947 + NBR 5410
 // Referência: Weg, Siemens, Schneider — tabelas de seleção
 
+import { TABELA_CAPACIDADE_COBRE } from './nbr5410'
+
 export type TipoPartida =
   | 'direta'
   | 'estrelaTriangulo'
@@ -38,23 +40,6 @@ const DISJUNTORES_D = [1, 2, 3, 4, 6, 8, 10, 13, 16, 20, 25, 32, 40, 50, 63, 80,
 
 // Contatores padrão AC-3 (correntes nominais em A)
 const CONTATORES_AC3 = [9, 12, 18, 25, 32, 40, 50, 65, 80, 95, 115, 150, 185, 225, 265, 330, 400]
-
-// Seções de cabo mínimas para métodos B1/B2/C (tabela NBR 5410 simplificada para condutores de Cu)
-// capacidade de corrente (A) por seção (mm²)
-const TABELA_CABO: { secao: number; B1: number; B2: number; C: number }[] = [
-  { secao: 1.5,  B1: 13,  B2: 13.5, C: 15.5 },
-  { secao: 2.5,  B1: 17.5, B2: 18,  C: 21   },
-  { secao: 4,    B1: 23,  B2: 24,   C: 28   },
-  { secao: 6,    B1: 29,  B2: 31,   C: 36   },
-  { secao: 10,   B1: 39,  B2: 42,   C: 50   },
-  { secao: 16,   B1: 52,  B2: 56,   C: 66   },
-  { secao: 25,   B1: 68,  B2: 73,   C: 84   },
-  { secao: 35,   B1: 83,  B2: 89,   C: 104  },
-  { secao: 50,   B1: 99,  B2: 108,  C: 125  },
-  { secao: 70,   B1: 125, B2: 136,  C: 160  },
-  { secao: 95,   B1: 150, B2: 164,  C: 194  },
-  { secao: 120,  B1: 172, B2: 188,  C: 225  },
-]
 
 // Fatores de multiplicação de corrente de partida por In
 const FATOR_PARTIDA: Record<TipoPartida, number> = {
@@ -98,8 +83,8 @@ export function faixaReleTermico(In: number): { min: number; max: number } {
 
 // Seção do cabo de alimentação do motor
 export function secaoCaboMotor(In: number, metodo: MetodoInstalacao): number {
-  const col = metodo as 'B1' | 'B2' | 'C'
-  const linha = TABELA_CABO.find(r => r[col] >= In)
+  const col = metodo.toLowerCase() as 'b1' | 'b2' | 'c'
+  const linha = TABELA_CAPACIDADE_COBRE.find(r => r[col] >= In)
   return linha?.secao ?? 120
 }
 
@@ -163,7 +148,7 @@ export const LABEL_PARTIDA: Record<TipoPartida, { titulo: string; quando: string
 }
 
 export const LABEL_METODO: Record<MetodoInstalacao, string> = {
-  B1: 'B1 — Embutido em conduto na parede',
-  B2: 'B2 — Eletroduto na superfície',
-  C:  'C — Cabo fixado diretamente na parede',
+  B1: 'B1 — Condutores isolados em eletroduto',
+  B2: 'B2 — Cabo multipolar em eletroduto',
+  C:  'C — Cabos sobre parede/teto ou direto em alvenaria',
 }

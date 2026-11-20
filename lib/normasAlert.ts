@@ -4,7 +4,7 @@ import { getConfig, setConfig } from './db'
 const NORMAS_ALERT_VERSION = '2026-07-15'
 
 const MENSAGEM = [
-  'Elétrica NBR v1.4.0 — Novidades:',
+  'Eletricomtec Pro v1.4.0 — Novidades:',
   '',
   '• Calculadora de Orçamento (material + MO)',
   '• Conversor de unidades (kW↔CV↔kVA, mm²↔AWG)',

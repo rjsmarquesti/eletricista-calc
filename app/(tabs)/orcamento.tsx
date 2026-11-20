@@ -62,7 +62,7 @@ export default function OrcamentoScreen() {
     linhas.push(`Material: ${formatarMoeda(resultado.subtotalMaterial)}`)
     linhas.push(`Mão de obra (${percMO}%): ${formatarMoeda(resultado.maoDeObra)}`)
     linhas.push(`TOTAL: ${formatarMoeda(resultado.total)}`)
-    compartilharTexto('Orçamento Elétrico — Elétrica NBR', linhas.join('\n'))
+    compartilharTexto('Orçamento Elétrico — Eletricomtec Pro', linhas.join('\n'))
   }
 
   return (

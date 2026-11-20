@@ -184,7 +184,7 @@ export default function DisjuntorScreen() {
               <Text style={[s.drDesc, s.drDescObrig]}>{resultado.motivoDR}</Text>
             )}
             {!resultado.drObrigatorio && (
-              <Text style={s.drDesc}>Nenhum dos ambientes selecionados exige DR (NBR 5410 item 6.3.6).</Text>
+              <Text style={s.drDesc}>Nenhum dos ambientes selecionados exige DR (NBR 5410 item 5.1.3.2.2).</Text>
             )}
             {resultado.drObrigatorio && (
               <Text style={s.drDesc}>DR 30mA classe AC (ou A para cargas eletrônicas).</Text>

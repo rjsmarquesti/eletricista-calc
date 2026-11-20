@@ -15,9 +15,9 @@ import { Ionicons } from '@expo/vector-icons'
 type Tensao = 127 | 220
 
 const METODOS: { key: MetodoInstalacao; label: string; desc: string }[] = [
-  { key: 'B1', label: 'B1', desc: 'Embutido em conduto na parede' },
-  { key: 'B2', label: 'B2', desc: 'Eletroduto na superfície' },
-  { key: 'C',  label: 'C',  desc: 'Cabo fixado na parede' },
+  { key: 'B1', label: 'B1', desc: 'Condutores isolados em eletroduto (aparente ou embutido em alvenaria)' },
+  { key: 'B2', label: 'B2', desc: 'Cabo multipolar em eletroduto' },
+  { key: 'C',  label: 'C',  desc: 'Cabos sobre parede/teto ou embutidos direto na alvenaria' },
 ]
 
 export default function BitolaScreen() {
@@ -138,7 +138,7 @@ export default function BitolaScreen() {
           </>
         )}
 
-        <Text style={s.label}>Comprimento do circuito (m) — ida + volta</Text>
+        <Text style={s.label}>Distância do quadro até a carga (m) — só ida</Text>
         <TextInput
           style={s.input}
           value={comprimento}
