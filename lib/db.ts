@@ -28,6 +28,14 @@ export function initDB(): void {
       criado_em INTEGER NOT NULL,
       FOREIGN KEY (projeto_id) REFERENCES projetos(id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS unifilares (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      dados TEXT NOT NULL,
+      criado_em INTEGER NOT NULL,
+      atualizado_em INTEGER NOT NULL
+    );
   `)
 }
 
@@ -124,4 +132,35 @@ export function getUltimosCalculos(limite = 50): Calculo[] {
 
 export function deletarCalculo(id: number): void {
   db.runSync('DELETE FROM calculos WHERE id = ?', [id])
+}
+
+// ── Unifilares salvos ─────────────────────────────────────────────────────────
+
+export interface UnifilarSalvo {
+  id: number
+  nome: string
+  dados: string
+  criado_em: number
+  atualizado_em: number
+}
+
+export function getUnifilares(): UnifilarSalvo[] {
+  return db.getAllSync<UnifilarSalvo>('SELECT * FROM unifilares ORDER BY atualizado_em DESC')
+}
+
+export function salvarUnifilar(nome: string, dados: string, id?: number): number {
+  const now = Date.now()
+  if (id !== undefined) {
+    db.runSync('UPDATE unifilares SET nome=?, dados=?, atualizado_em=? WHERE id=?', [nome, dados, now, id])
+    return id
+  }
+  const r = db.runSync(
+    'INSERT INTO unifilares (nome, dados, criado_em, atualizado_em) VALUES (?, ?, ?, ?)',
+    [nome, dados, now, now]
+  )
+  return r.lastInsertRowId
+}
+
+export function deletarUnifilar(id: number): void {
+  db.runSync('DELETE FROM unifilares WHERE id = ?', [id])
 }

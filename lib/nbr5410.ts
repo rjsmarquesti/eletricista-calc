@@ -216,6 +216,10 @@ export interface CircuitoSugerido {
   descricao: string
   tomadas?: number
   ambientes?: string[]
+  // Dimensionamento estruturado (ausente em resultados salvos por versões anteriores do app)
+  disjuntorA?: number
+  bitolaMm2?: number
+  dr?: boolean
 }
 
 export interface ResultadoCircuitos {
@@ -234,6 +238,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
     tipo: '15A',
     descricao: 'Pontos de luz de todos os cômodos (exceto área de serviço). Disjuntor 10A, fio 1,5mm².',
     ambientes: ambientes.map(a => a.tipo),
+    disjuntorA: 10, bitolaMm2: 1.5, dr: false,
   })
 
   // Tomadas de uso geral (TUG)
@@ -245,6 +250,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
       tipo: '15A' as const,
       descricao: `TUG 10A. Disjuntor 16A, fio 2,5mm².`,
       tomadas: Math.min(10, totalTomadas - i * 10),
+      disjuntorA: 16, bitolaMm2: 2.5, dr: false,
     })
   }
 
@@ -256,6 +262,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
       nome: 'Chuveiro elétrico',
       tipo: 'dedicado',
       descricao: 'Circuito exclusivo. 220V, 40A, fio 6mm² (chuveiro até 7500W). Disjuntor 32A.',
+      disjuntorA: 32, bitolaMm2: 6, dr: true,
     })
     observacoes.push('Chuveiro: verificar potência real — 5500W usa 4mm², acima de 7500W usa 10mm².')
   }
@@ -267,6 +274,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
         nome: `Ar-condicionado ${qtd > 1 ? i + 1 : ''}`.trim(),
         tipo: 'dedicado',
         descricao: 'Circuito exclusivo. 220V ou 127V conforme fabricante. Fio mínimo 2,5mm².',
+        disjuntorA: 20, bitolaMm2: 2.5, dr: false,
       })
     }
   }
@@ -276,6 +284,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
       nome: 'Forno elétrico / micro-ondas',
       tipo: 'dedicado',
       descricao: 'Circuito exclusivo TUE 20A. Disjuntor 20A, fio 2,5mm².',
+      disjuntorA: 20, bitolaMm2: 2.5, dr: false,
     })
   }
 
@@ -284,6 +293,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
       nome: 'Máquina de lavar / secar',
       tipo: 'dedicado',
       descricao: 'Circuito exclusivo TUE 20A. Disjuntor 20A, fio 2,5mm².',
+      disjuntorA: 20, bitolaMm2: 2.5, dr: true,
     })
   }
 
@@ -292,6 +302,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
       nome: 'Freezer / geladeira',
       tipo: 'dedicado',
       descricao: 'Circuito exclusivo TUE 20A. Disjuntor 20A, fio 2,5mm².',
+      disjuntorA: 20, bitolaMm2: 2.5, dr: false,
     })
   }
 
@@ -300,6 +311,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
       nome: 'Micro-ondas',
       tipo: 'dedicado',
       descricao: 'Circuito exclusivo TUE 20A. Disjuntor 20A, fio 2,5mm².',
+      disjuntorA: 20, bitolaMm2: 2.5, dr: false,
     })
   }
 
@@ -310,6 +322,7 @@ export function calcularCircuitos(ambientes: AmbienteResidencial[]): ResultadoCi
       nome: 'Iluminação / tomadas — Área de Serviço',
       tipo: '15A',
       descricao: 'Circuito separado para área de serviço. DR obrigatório. Fio 2,5mm².',
+      disjuntorA: 16, bitolaMm2: 2.5, dr: true,
     })
   }
 
